@@ -4,7 +4,7 @@
 
 ## What is Git?
 
-**CVCS (Centralized Version Control Systems)**
+### CVCS (Centralized Version Control Systems)
 
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gh4wlfs9z7j30m80fgaae.jpg" alt="Centralized Version Control Systems" style="zoom:50%;" />
 
@@ -12,7 +12,7 @@
 
 
 
-**DVCS (Distributed Version Control System)**
+### DVCS (Distributed Version Control System)
 
 <img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gh4wg0jog9j30ik0m80t6.jpg" alt="Distributed Version Control System" style="zoom:67%;"/>
 
@@ -31,33 +31,42 @@
 
 ## Install Git (The Command Line)
 
-```bash
-$ brew install git
+### Install
 
-# Check Git Version
-$ git --version
+```bash
+$ brew install git # using brew to install git
+
+$ git --version # Check Git Version
 ```
 
+### Set User Info
 
+```bash
+$ git config --global user.name "{your user name}"
+$ git config --global user.email "{your email address}"
+
+$ git config --list --show-origin # Show all config info and paths
+$ git config <key> # Check git set
+```
 
 ## Command
 
 ### Common Command
 
 ```bash
-# Clone A Repository to Local
-git clone {repository URL} # Clone with SSH
+$ git clone {repository URL} # Clone with SSH
 
-git pull origin master
+$ git pull origin master
 
-git pull
+$ git pull
 
-git status
-
-git commit -m "{update message}"
-
-git push # Update with SSH, need password
+$ git status
+$ git add .
+$ git commit -m "{update message}"
+$ git push # Update with SSH, need password
 ```
+
+<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gh6sfsjrbwj30u00uzwxa.jpg" alt="git help" style="zoom:60%;" />
 
 
 
