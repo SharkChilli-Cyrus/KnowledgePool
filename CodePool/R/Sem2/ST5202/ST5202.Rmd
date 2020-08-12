@@ -1,0 +1,166 @@
+---
+title: "ST5202"
+author: "Zhu Xu"
+date: "2019/2/10"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# importing GPA data and saving as gpa.example
+gpa.example = read.table("/Users/xuzhu/Desktop/Notes/Sem2/ST5202-Applied_Regression_Analysis/CH01PR19.txt")
+summary(gpa.example)
+# assinging names
+colnames(gpa.example) = c("Y", "X")
+# viewing the data
+head(gpa.example)
+tail(gpa.example)
+# accessing the data
+# accessing the element in the 2nd row, 1st column
+gpa.example[2,1]
+## accessing the 100th row
+gpa.example[100,]
+## accessing the 1st column
+gpa.example[,1]
+```
+
+```{r}
+# running linear regression
+lm.gpa = lm(Y~X, data=gpa.example)
+lm.gpa
+summary(lm.gpa)
+```
+
+```{r}
+## b_1
+b_1_up = sum((gpa.example$X-mean(gpa.example$X))*(gpa.example$Y-mean(gpa.example$Y)))
+b_1_down = sum((gpa.example$X-mean(gpa.example$X))^2)
+b_1 = b_1_up/b_1_down # b_1=\frac{\sum{(X_i-\bar{X})(Y_i-\bar{Y})}{\sum{(X_i-\bar{X})^2}}
+b_1 # 0.03882713
+
+## b_0
+b_0 = mean(gpa.example$Y)-b_1*mean(gpa.example$X)
+b_0 # 2.114049
+
+## s
+dim(gpa.example) # 120   2
+s2 = sum((gpa.example$Y-(b_0+b_1*gpa.example$X))^2)/(120-2)
+s = sqrt(s2)
+s # 0.623125
+
+## s{b_1} 
+s_b_1 = sqrt(s2/b_1_down)
+s_b_1 # 0.01277302
+```
+
+```{r}
+# constructing 95% confidence interval
+## 0.975 quantile of t-dist, with d.f n-2=118
+qt(1-0.05/2, df=118) # 1.980272
+width = qt(1-0.05/2, df=118)*s_b_1
+c(b_1-width, b_1+width) # 0.01353307 0.06412118
+
+## confidence interval
+confint(lm.gpa, level=0.95)
+```
+
+```{r}
+# constructing confidence interval for E[Y_h] at X=27 and X=32
+newobs = data.frame(Y=c(NA), X=c(27,32))
+pre_CI = predict(lm.gpa, newdata=newobs, interval="confidence", level=0.95)
+pre_CI
+```
+
+```{r}
+# constructing prediction interval for E[Y_h] at X=27 and X=32
+pre_PI = predict(lm.gpa, newdata=newobs, interval="prediction", level=0.95)
+pre_PI
+```
+
+```{r}
+aov.gpa = aov(lm.gpa)
+summary(aov.gpa)
+```
+
+```{r}
+full.model = lm(Y~factor(X), data=gpa.example)
+reduced.model = lm(Y~X, data=gpa.example)
+f.r.anova = anova(full.model, reduced.model)
+f.r.anova
+```
+
+```{r}
+data(cars)
+plot(cars)
+r1 = lm(cars$dist~cars$speed)
+abline(r1, col="red")
+r2 = lm(cars$speed~cars$dist)
+a2 = r2$coefficients[1] # Intercept
+b2 = r2$coefficients[2] # slop
+abline(-a2/b2, 1/b2, col="blue")
+r3 = princomp(cars)
+b3 = r3$loadings[2,1]/r3$loadings[1,1]
+a3 = r3$center[2]-b3*r3$center[1]
+abline(a3,b3)
+title(main="Comparing three regressions")
+```
+
+
+### Week 5
+
+```{r}
+# Week 5
+
+portrait = read.table(
+  "/Users/xuzhu/Desktop/Notes/Sem2/ST5202-Applied_Regression_Analysis/CH06FI05.txt", header=FALSE, sep="")
+colnames(portrait) = c("X1", "X2", "Y")
+attach(portrait)
+mod = lm(Y~X1+X2)
+summary(mod)
+
+# getting same results with matrix equation
+n = length(Y)
+X = cbind(rep(1,n), X1, X2)
+tXX = t(X)%*%X; tXY=t(X)%*%Y
+b = solve(tXX)%*%tXY
+
+p = length(X[1,])
+Yhat = X%*%b
+res = Y-Yhat
+MSE = sum(res^2)/(n-p)
+sqrt(MSE)
+
+s2b = MSE*solve(tXX)
+
+# 95% confidence and prediction intervals Xh = c(1,65.4,17.6)
+Yh = t(Xh)%*%b
+
+s2yh = t(Xh)%*%s2b%*%Xh
+
+# CI for mean (single level of Xh)
+SE_Yh1 = sqrt(s2yh[1,1])
+alpha = 0.05
+Yh[1] - qt(1-alpha/2, n-p)*SE_Yh1
+Yh[1] + qt(1-alpha/2, n-p)*SE_Yh1
+# or directly
+predict(mod, newdata = data.frame(X1=65.4, X2= 17.6), level=1-alpha, interval = "confidence")
+
+# for new observation, additional uncertainty (again, single level of Xh):
+s2yh+MSE
+
+Yh[1] - qt(1-alpha/2, n-p)*sqrt(diag(s2yh+MSE))
+Yh[1] + qt(1-alpha/2, n-p)*sqrt(diag(s2yh+MSE))
+
+# or directly
+predict(mod, newdata = data.frame(X1=65.4, X2= 17.6), level=1-alpha, interval = "prediction")
+
+## summary table
+summary(mod)
+
+
+
+```
+

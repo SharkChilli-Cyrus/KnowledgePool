@@ -1,0 +1,193 @@
+---
+title: "ST5201-Homework5"
+author: 
+- Zhu Xu 
+- User ID:E0337988
+- Student ID:A0191344H
+date: "2018/11/15"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\noindent\rule[-5pt]{16.3cm}{0.15em}
+\linespread{1.5}
+
+###Q1：
+
+####a)
+
+```{r warning = FALSE}
+T=rep(0,500)
+for(i in 1:500){
+x=rnorm(7,5,5)
+T[i]=(mean(x)-5)/sqrt(var(x)/7)
+}
+p1 = hist(T,breaks=20,plot = F)
+p2 = hist(T,breaks=50,plot = F)
+p3 = hist(T,breaks=100,plot = F)
+plot(p1,col = "pink",main="p-value")
+plot(p2,col = "lightgreen",add = T)
+plot(p3,col = "lightblue",add = T)
+```
+
+\newpage
+
+####b)
+
+```{r}
+d1=density(T,bw =0.025)
+d2=density(T,bw =0.125)
+d3=density(T,bw =1.25)
+plot(d1, lwd = 2,col="pink",main="kernel density",xlab="")
+lines(d2, lwd = 2,col = "lightgreen")
+lines(d3, lwd = 2,col = "lightblue")
+legend('topright',
+       legend,c("bandwith=0.025","bandwith=0.125","bandwith=1.25"),
+       col=c("skyblue","pink","grey"),
+       pch=1,lwd = 1,inset=0.01)
+```
+
+\newpage
+
+####c)
+
+```{r}
+qqnorm(T,main = "T distribution Q-Q Plot",xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",plot.it = TRUE)
+qqline(rt(500, df = 6), col = 2, pch=21)
+```
+
+\newpage
+
+###Q2:
+
+####a)
+
+```{r}
+Q2=read.table(
+  "/Users/xuzhu/Desktop/Notes/ST5201/Homework/hw5/Q2.txt")
+x=Q2[,2]
+boxplot(x,main="Boxplot",ylab="Q2")
+```
+
+####b)
+
+```{r}
+stem(x)
+```
+
+####c)
+
+```{r}
+mean(x)
+median(x)
+```
+
+###Q3:
+
+####a)
+\begin{center}
+$\mu = 140$
+\end{center}
+\begin{center}
+$\{\bar{X}\geq\mu-t_{n-1}(\frac{a}{2})\frac{S}{n}\}\cup\{\bar{X}\leq\mu + t_{n-1}(\frac{a}{2})\frac{S}{n}\}$
+\end{center}
+
+####b)
+
+```{r}
+t.test(x,mu=140)
+```
+
+\newpage
+
+####c)
+
+```{r}
+confint<-function(x,alpha=0.10)
+{
+  n=length(x)
+  xb=mean(x)
+  sigma=sqrt(n/(n-1))*sd(x)
+  tmp=sd(x)/sqrt(n)*qt(1-alpha/2,n-1)
+  df= n-1
+  data.frame(mean=xb,df=df,a=xb-tmp,b=xb+tmp)
+}
+confint(x)
+```
+
+####d)
+
+```{r}
+confint2<-function(x,alpha=0.10)
+{
+  n=length(x)
+  xb=mean(x)
+  sigma2=var(x)
+  a=n*sigma2/qchisq(alpha/2,n-1)
+  b=n*sigma2/qchisq(1-alpha/2,n-1)
+  df=n-1
+  data.frame(sigma2=var(x),df=df,a,b)
+}
+confint2(x)
+```
+
+\newpage
+
+###Q4:
+
+####a)
+
+\begin{center}
+$z_1=X;\quad z_2=X+Y\qquad\Rightarrow |J^{-1}|=1,\quad X=z_1,\quad Y=z_2 - z_1$\\
+$f(x,y)=\frac{1}{2\pi}exp\{-\frac{x^2+y^2}{2}\}$
+\end{center}
+\begin{align*}
+f_{z_1,z_2}(z_1,z_2)&=|J^{-1}|f_{X,Y}(z_1.z_2)\\
+&=\frac{1}{2\pi}exp\{-\frac{1}{2}[z_1^2 + (z_2 - z_1)^2]\}\\
+&=\frac{1}{2\pi}exp\{-\frac{1}{2}(2z_1^2 + z_2^2 - 2z_1 z_2)\}\\
+\end{align*}
+\begin{align*}
+f(x,x+y)&=\frac{1}{2\pi}exp\{-\frac{1}{2}[2x^2 + (x+y)^2 - 2x(x+y)]\}\\
+&=\frac{1}{2\pi}exp\{-\frac{x^2+y^2}{2}\}
+\end{align*}
+
+####b)
+
+\begin{align*}
+&f(x)=\frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}\\
+&f(x+y)=\frac{1}{2\sqrt{\pi}}e^{-\frac{1}{4}(x+y)^2}\\
+&f(x)f(x+y)=\frac{1}{2\sqrt{2}\pi}exp\{-\frac{x^2+\frac{1}{2}(x+y)^2}{2}\}\neq f(x,x+y)
+\end{align*}
+\begin{center}
+Thus X and X+Y are not independent.
+\end{center}
+
+####c)
+
+\begin{center}
+$z_3=X-Y;\quad z_4=X+Y\qquad\Rightarrow |J^{-1}|=\frac{1}{2},\quad X=\frac{z_3+z_4}{2},\quad Y=\frac{z_4 - z_3}{2}$
+\end{center}
+\begin{center}
+$f_{Z_3,Z_4}(z_3,z_4)=|J^{-1}|f_{X,Y}(z_3,z_4)=\frac{1}{4\pi}exp\{-\frac{z_3^2+z_4^2}{4}\}$
+\end{center}
+\begin{center}
+$f(x-y,x+y)=\frac{1}{4\pi}exp\{-\frac{1}{4}[(x-y)^2+(x+y)^2]\}$
+\end{center}
+
+####d)
+
+\begin{center}
+$f(x-y)=\frac{1}{2\sqrt\pi}exp\{-\frac{(x-y)^2}{4}\}$
+\end{center}
+\begin{center}
+$f(x-y)f(x+y)=\frac{1}{4\pi}exp\{-\frac{(x-y)^2}{4}\}exp\{-\frac{(x+y)^2}{4}\}=f(x-y,x+y)$
+\end{center}
+\begin{center}
+Thus $X+Y$ and $X-Y$ are independent.
+\end{center}
+

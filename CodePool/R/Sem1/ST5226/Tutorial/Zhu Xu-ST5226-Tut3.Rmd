@@ -1,0 +1,147 @@
+---
+title: "ST5226-Tut1"
+author: "Zhu Xu<br>User ID:E0337988<br>Student ID:A0191344H"
+date: "11 September 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+rm(list = ls())
+require(stats)
+```
+##Q1£º
+```{r}
+hawkers <- readRDS("C:/Users/MSI/Desktop/Notes/ST5226-Spatial Statistics/Tut/onemap_hawker_ctr_raw.rds")
+str(hawkers[[1]][[2]],max.level=2)
+```
+###(a)
+```{r}
+i <- 1
+post_1 <- as.numeric(hawkers[[1]][[i+1]]$ADDRESSPOSTALCODE)
+street_1 <- hawkers[[1]][[i+1]]$ADDRESSSTREETNAME
+tempcoor <- hawkers[[1]][[i+1]]$XY
+coor <- as.data.frame(strsplit(tempcoor, ","))
+X <- as.numeric(as.matrix(coor[1,1]))  
+Y <- as.numeric(as.matrix(coor[2,1]))
+
+hawkers_1 <- t(data.frame(c(post_1, street_1, X, Y)))
+rownames(hawkers_1) <- 1
+colnames(hawkers_1) <- c("postcode", "street", "X", "Y")
+hawkers_1
+rm(post_1,street_1,tempcoor,coor,X,Y,hawkers_1)
+```
+###(b)
+```{r}
+nhk <- as.numeric(hawkers[[1]][[1]])
+postcode <- data.frame(0, nhk, 1)
+street <- data.frame(0, nhk, 1)
+X <- matrix(0, 1, nhk)
+Y <- matrix(0, 1, nhk)
+
+for(i in 1:nhk){
+  postcode[i] <- hawkers[[1]][[i+1]]$ADDRESSPOSTALCODE
+  street[i] <- hawkers[[1]][[i+1]]$ADDRESSSTREETNAME
+  tempcoor <- hawkers[[1]][[i+1]]$XY
+  coor <- as.data.frame(strsplit(tempcoor, ","))
+  X[i] <- as.matrix(coor[1,1])
+  Y[i] <- as.matrix(coor[2,1])
+}
+
+X <- as.data.frame(as.numeric(X))
+Y <- as.data.frame(as.numeric(Y))
+postcode <- as.data.frame(as.factor(postcode))
+street <- as.data.frame(as.factor(street))
+
+rownames(postcode) <- 1:nhk
+rownames(street) <- 1:nhk
+rownames(X) <- 1:nhk
+rownames(Y) <- 1:nhk
+
+HKC <- cbind(postcode, street, X, Y)
+colnames(HKC) <- c("post_code", "street", "X", "Y")
+HKC
+```
+###(c)
+```{r}
+library(sp)
+north_south <- matrix(0, nrow(HKC), 1)
+north_south[which(HKC$Y >= 35000)] <- 1  
+north_south <- as.data.frame(as.factor(north_south))
+colnames(north_south) <- "north_south"
+HKC_new <- cbind(HKC, north_south)
+coordinates(HKC_new) <- c("X","Y")
+subzones_tut1 <- load("C:/Users/MSI/Desktop/Notes/ST5226-Spatial Statistics/Tut/subzones_tutorial_1.rdt")
+plot(subzones_sp, col = "pink", axes = T)
+plot(HKC_new, add = T, col = HKC_new$north_south, pch = 1, lwd = 3)
+title("Hawker Centers in Singapore")
+```
+
+##Q2:
+###(a)
+```{r}
+SPDF <- SpatialPointsDataFrame(subzones_sp, pop_data)
+SPDF
+```
+###(b)
+```{r}
+plot(subzones_sp, col = rainbow(300), lwd = 2, axes = T, main = "The Subzone Map of Singapore",
+      xlab = "longitude(fake)", ylab = "latitude(fake)")
+```
+
+###(c)
+```{r}
+num_pop <- pop_data$total
+num_pop[which(is.na(num_pop == T))] <- -1
+sort_np <- sort(num_pop, decreasing = T)
+max_population_first4_zones <- sapply(c(1:4), function(x) { which(num_pop == sort_np[x]) })
+rm(num_pop, sort_np)
+record <- matrix(0, nrow(pop_data), 1)
+
+for(i in 1:4){
+  record[max_population_first4_zones[i]] <- i
+}
+record <- as.factor(record)
+plot(subzones_sp, axes = TRUE, xlab = "longitude(fake)", ylab = "atitude(fake)", 
+     col=c('white', 'yellow', 'blue','red','black')[as.numeric(record)])
+title("The Four Most Populated Zones in Singapore")
+
+col <- c('yellow', 'blue', 'red', 'black')
+rank <- c("first", "second", "third", "forth")
+for(i in 1:4){
+  catch <- pop_data[max_population_first4_zones[i],]
+  cat(catch[1,1], "is the", rank[i], "zone, with", catch[1,2], "people living there","(", col[i],")", "\n")
+}
+```
+##Q3:
+```{r}
+fox_rabies <- readRDS("C:/Users/MSI/Desktop/Notes/ST5226-Spatial Statistics/Tut/fox_rabies.rds")
+```
+###(a)
+```{r}
+g_structure <-GridTopology(c(0,0), c(1,1), c(32,32))
+str(coordinates(g_structure), max.level = 1)
+g_background <- SpatialGrid(g_structure)
+cases <- as.numeric(matrix(t(fox_rabies), 32*32, 1))
+SGDF <- SpatialGridDataFrame(g_background, data.frame(count = cases))
+str(SGDF, max.level = 2)
+```
+###(b)
+```{r}
+plot(SGDF, col = terrain.colors(15), axes = T)
+coords <- coordinates(SGDF)
+num <- as.character(SGDF[["count"]])
+text(coords[,1], coords[,2], num, cex = 0.5)
+title("Heat Map of Rabies Cases")
+```
+
+###(c)
+\
+Dear professor,\
+\
+Sorry, for "Q3-c", I am confused, and I don't know how to do it.
+
+Regards,\
+Zhu Xu

@@ -1,0 +1,19 @@
+---
+title: "ST5218"
+author: "Zhu Xu"
+date: "2019/2/20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tseries)
+data1 = get.hist.quote(instrument = "JD",
+                       start = "2012-01-01", end = "2019-01-31",
+                       quote = c("AdjClose"), provider = "yahoo",
+                       compress = c("d"))
+plot(data1)
+```

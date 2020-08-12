@@ -1,0 +1,158 @@
+---
+title: "ST5210-Tut4"
+author: "Name:Zhu Xu<br>User ID:E0337988<br>Student ID:A0191344H"
+date: "18 Spetember 2018"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1:
+
+```{r}
+library(tseries)
+##(a)
+dji <- get.hist.quote(instrument = "^DJI", start="2000-01-01",
+                     quote = c("AdjClose"),provider = "yahoo", compression = "d")
+##(b)
+returns <- diff(log(dji)) 
+
+##(c)
+Tue <- (weekdays(time(returns))== "???ڶ?" )
+##(d)
+Tue_adj <- returns[Tue] 
+Mon <- ( weekdays(time(returns)) == "????һ" )
+Wed <- ( weekdays(time(returns)) == "??????" )
+Thu <- ( weekdays(time(returns)) == "??????" )
+Fri <- ( weekdays(time(returns)) == "??????" )
+
+Mon_adj <- returns[Mon]
+Wed_adj <- returns[Wed]
+Thu_adj <- returns[Thu]
+Fri_adj <- returns[Fri]
+
+t.test(Tue_adj, Mon_adj)
+t.test(Tue_adj, Wed_adj)
+t.test(Tue_adj, Thu_adj)
+t.test(Tue_adj, Fri_adj)
+
+##(e)
+t.test(Tue,Mon, paired = T)
+t.test(Tue,Wed, paired = T)
+t.test(Tue,Thu, paired = T)
+t.test(Tue,Fri, paired = T)
+
+```
+
+# Question 2:
+
+```{r}
+Data <- read.csv("C:/Users/MSI/Desktop/Notes/ST5210-Multivariate Data Analysis/Tutorial/Tutorial04/dailyReturn.csv", header = T)
+portfolios <- Data[,-1]
+colnum <- ncol(portfolios)
+test.data <- portfolios[,c(2:colnum)] - portfolios[,c(1:colnum-1)]
+library(mvtnorm)
+library(ICS)
+library(ICSNP)
+HotellingsT2(test.data)
+```
+
+
+\usepackage{amsmath}
+
+#Question 3:
+
+###a)
+
+\begin{align*}
+&\qquad Var(\bar{X})=E(\bar{X})^2-[E(\bar{X})]^2\\
+&\Rightarrow \frac{1}{n^2}Var(\sum_{i=1}^{n}X_i)=[E(\bar{X})]^2-[\frac{1}{n}E(\sum_{i=1}^{n}X_i)]^2\\
+&\Rightarrow \frac{\sum_x}{n}=E(\bar{X})^2-\mu_{X}^{2}\\
+&\Rightarrow E(\bar{X})^2=\frac{\sum_x}{n}+\mu_{X}^{2}\\
+&\Rightarrow E(\bar{Y})^2=\frac{\sum_y}{n}+\mu_{Y}^{2}\\
+\end{align*}
+
+\begin{align*}
+\qquad E[(\bar{X}-\bar{Y})^2]&=E[\bar{X}^2+\bar{Y}^2-2\bar{X}\bar{Y}]\\
+&=E(\bar{X}^2)+E(\bar{Y}^2)-2EE(\bar{X}\bar{Y})\\
+&=\frac{\sum_x}{n}+\mu_{X}^2+\frac{\sum_y}{n}+\mu_y^2-2\mu_X\mu_Y\\
+[E(\bar{X}-\bar{Y})]^2&=[E(\bar{X}-E(\bar{Y})]^2\\
+&=\mu_{x}^2+\mu_{y}^2-2\mu_{x}\mu_{Y}\\
+Var(\bar{X}-\bar{Y})&=E[(\bar{X}-\bar{Y})^2]-[E(\bar{X}-\bar{Y})]^2\\
+&=\frac{\sum_x}{n}+\mu_{X}^2+\frac{\sum_y}{n}+\mu_y^2-2\mu_X\mu_Y-\mu_{x}^2-\mu_{y}^2+2\mu_{x}\mu_{Y}\\
+&=\frac{\sum_x}{n}+\frac{\sum_y}{n}
+\end{align*}
+
+###b)
+
+\begin{align*}
+Var(\bar{X})&=\frac{\sum_x}{n};\qquad Var(\bar{Y})=\frac{\sum_y}{n}\\
+2cov(\bar{X},\bar{Y})&=2cov(\frac{\sum_{i=1}^{n}X}{n},\frac{\sum_{i=1}^{n}Y}{n})\\
+&=\frac{2}{n^2}cov(X_1+\cdots +X_n,Y_1+\cdots +Y_n)\\
+&=\frac{2}{n^2}[cov(X_1,Y_1)+\cdots +cov(X_n,Y_n)]\\
+&=\frac{2n\sum_{XY}}{n^2}\\
+&=\frac{2\sum_{XY}}{n}
+\end{align*}
+
+#Question 4:
+
+$\qquad D\sim N(A\mu,A\sum A^{T})$
+$$
+A=
+\begin{bmatrix}
+1&-1&0\\
+0&1&-1\\
+\end{bmatrix}
+$$
+
+$$
+A_\mu=\begin{bmatrix}
+1&-1&0\\
+0&1&-1\end{bmatrix}
+\begin{bmatrix}
+\mu_1\\
+\mu_2\\
+\mu_3\end{bmatrix}
+=\begin{bmatrix}
+\mu_1-\mu_2\\
+\mu_2-\mu_3\end{bmatrix}
+$$
+
+
+$$
+\begin{align*}
+A\sum A^{T}&=\begin{bmatrix}
+1&-1&0\\
+0&1&-1\end{bmatrix}
+\begin{bmatrix}
+\sigma_{11}&\sigma_{12}&\sigma_{13}\\
+\sigma_{21}&\sigma_{22}&\sigma_{23}\\
+\sigma_{31}&\sigma_{32}&\sigma_{33}\end{bmatrix}
+\begin{bmatrix}
+1&0\\
+-1&1\\
+0&-1\end{bmatrix}\\
+&=\begin{bmatrix}
+\sigma_{11}-\sigma_{21}&\sigma_{12}-\sigma_{22}&\sigma_{13}-\sigma_{23}\\
+\sigma_{21}-\sigma_{31}&\sigma_{22}-\sigma_{32}&\sigma_{23}-\sigma_{33}\end{bmatrix}
+\begin{bmatrix}
+1&0\\
+-1&1\\
+0&-1\end{bmatrix}\\
+&=\begin{bmatrix}
+\sigma_{11}-\sigma_{21}-\sigma_{12}+\sigma_{22}&\sigma_{12}-\sigma_{22}-\sigma_{13}+\sigma_{23}\\
+\sigma_{21}-\sigma_{31}-\sigma_{22}+\sigma_{32}&\sigma_{22}-\sigma_{32}-\sigma_{23}+\sigma_{33}\end{bmatrix}\\
+&=\begin{bmatrix}
+\sigma_{11}-2\sigma_{21}+\sigma_{22}&\sigma_{12}-\sigma_{22}-\sigma_{13}+\sigma_{23}\\
+\sigma_{21}-\sigma_{31}-\sigma_{22}+\sigma_{32}&\sigma_{22}-2\sigma_{32}+\sigma_{33}\end{bmatrix}
+\end{align*}
+$$
+
+
+

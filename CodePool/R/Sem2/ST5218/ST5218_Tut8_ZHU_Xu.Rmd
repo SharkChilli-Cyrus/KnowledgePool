@@ -1,0 +1,197 @@
+---
+title: "Tut8_ST5218"
+author: 
+- Name:Zhu Xu
+- User ID:E0337988
+- Matriculation ID:A0191344H
+date: "9/April/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\rule[-5pt]{16.3cm}{0.15em}
+\linespread{1.3}
+
+###Question 1:
+
+####a)
+\begin{center}
+$\gamma(0)=(1+1.2^2+0.3^2)$
+
+$\gamma(1)=1\times1.2+1.2\times(-0.3)$
+
+$\gamma(2)=1\times(-0.3)$
+
+$\gamma(3)=\gamma(4)=\gamma(5)=0$
+\end{center}
+Thus
+
+$$
+\rho(1)=0.332,\rho(2)=-0.119,\rho(3)=\rho(4)=\rho(5)=0
+$$
+
+####b)
+
+We have
+
+$$
+\gamma(0)=0.5\gamma(1)+1,\quad\gamma(1)=0.5\gamma(0),\quad\gamma(h)=0.5\gamma(h-1)\quad for\quad h>1
+$$
+
+Thus
+
+$$
+\rho(h)=0.5^h\quad for\quad h\geq 1
+$$
+
+####c)
+
+Similarly
+
+$$
+\gamma(0)=\frac{1}{1-0.098^2};\qquad\gamma(1)=\frac{0.98}{1-0.98^2};\qquad\rho(h)=0.98^h,\quad h\geq 1
+$$
+
+\newpage
+####d)
+
+Fram $Z_t-1.3Z_{t-1}+0.4Z_{t-2}=a_t$, we have
+\begin{center}
+$\gamma(0)-1.3\gamma(1)+0.4\gamma(2)=4$
+
+$\gamma(1)-1.3\gamma(0)+0.4\gamma(1)=0$
+
+$\gamma(2)-1.3\gamma(1)+0.4\gamma(0)=0$
+
+$\gamma(h)-1.3\gamma(h-1)+0.4\gamma(h-2)=0$
+\end{center}
+Then
+
+$$
+\gamma(0)=34.5679,\quad\gamma(1)=32.0988,\quad\gamma(2)=27.9012,\quad\gamma(h)=1.3\gamma(h-1)-0.4\gamma(h-2)
+$$
+
+Thus we have 
+\begin{center}
+$\gamma(3)=1.3\times27.9012-0.4\times32.0988=23.4320$
+
+$\gamma(4)=1.3\times23.4320-0.4\times27.9012=19.3011$
+
+$\gamma(5)=1.3\times19.3011-0.4\times23.4320=15.7186$
+\end{center}
+###Question 2:
+
+Since
+\begin{center}
+$y_{t+1|t}=\mu+\phi_1(y_t-\mu)$
+
+$y_{t+2|t}=\mu+\phi_1(y_{t+1|t}-\mu)=\mu+\phi_1^2(y_t-\mu)$
+
+$y_{t+3|t}=\mu+\phi_1(y_{t+2|t}-\mu)=\mu+\phi_1^3(y_t-\mu)$
+
+$y_{t+h|t}=\mu+\phi_1(y_{t+h-1|t}-\mu)=\mu+\phi_1^h(y_t-\mu)\rightarrow\mu$ as $h\rightarrow\infty$
+\end{center}
+Thus write the model as
+
+$$
+Y_t=\mu+\phi_1(Y_{t-1}-\mu)+a_t
+$$
+
+###Question 3:
+
+After $q+1$ steps.
+
+###Question 4:
+\begin{align*}
+y_t&=a_t+\theta_1 a_{t-1}\\
+&=a_t+\theta_1(\theta_1 a_{t-2}+a_{t-1})\\
+&=a_t+\theta_1 a_{t-1}+\theta_1^2 a_{t-2}\\
+&=\cdots\\
+&=a_t+\theta_1 a_{t-1}+\cdots+\theta_1^{h-1}a_{t-h+1}+\theta_1^h a_{t-h}\\
+&\rightarrow AR(\infty)
+\end{align*}
+
+\newpage
+###Question 5:
+
+####a)
+
+```{r}
+library(tseries)
+library(timeSeries)
+P = get.hist.quote(instrument ='GOOG',start='2001-01-01',
+                   end='2014-12-31', quote=c('AdjClose'),
+                   provider='yahoo', compression='d')
+plot(P, type='l')
+```
+
+####b)
+
+```{r}
+r = diff(P)
+plot(r)
+```
+
+####c)
+
+```{r}
+model1 = arima(P, order=c(1, 1, 1))
+tsdiag(model1)
+model2 = arima(P, order=c(2, 1, 1))
+tsdiag(model2)
+model3 = arima(P, order=c(2, 1, 2))
+tsdiag(model3)
+```
+
+
+###Question 6:
+
+####a)
+
+$$
+E_{y_t}=2+0.7E_{y_{t-1}}+Ea_t+0.3Ea_{a-1}+0.4Ea_{t-2}=2+0.7E_{y_{t-1}}
+$$
+
+By its being stationary,$E_{y_{t-1}}=E{y_{t}}$, thus
+
+$$
+E_{y_t}=2+0.7E_{y_{t}}=\frac{2}{1-0.7}=\frac{20}{3}
+$$
+
+####b)
+
+$$
+a_{t-1}=y_{t-1}-y_{t-1|t-2}=1-\frac{20}{3}=-5.667
+$$
+
+Then we predict
+
+$$
+y_t=2+0.7\times1+0+0.3\times(-5.667)+0.4\times0=0.999
+$$
+
+####c)
+
+$y_{y-1}=1$
+
+$$
+a_{t-2}=y_{t-2}-y_{t-2|t-3}=0.5-\frac{20}{3}=-6.1667
+$$
+
+Then
+
+$$
+y_{t-1|t-2}=2+0.7\times0.5+0+0.3\times(-6.1667)+0.4\times0=0.4999
+$$
+
+$$
+a_{t-1}=y_{t-1}-y_{t-1|t-2}=1-0.4999=0.5001
+$$
+
+Thus
+
+$$
+y_t=2+0.7\times1+0+0.3\times0.5001+0.4\times(-6.1667)=0.3833
+$$

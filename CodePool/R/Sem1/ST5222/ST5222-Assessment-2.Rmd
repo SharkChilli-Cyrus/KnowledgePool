@@ -1,0 +1,373 @@
+---
+title: "ST5222-Assessment-2"
+author: 
+- Name:Zhu Xu
+- User ID:E0337988
+- Student ID:A0131944H
+date: "Nov 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\rule[-5pt]{16.3cm}{0.15em}
+\linespread{1.3}
+
+Let the Poisson distribution with parameter $\lambda > 0$ be written $P(\lambda)$ and donate the corresponding density function as $\vartheta(x;\lambda)$.We consider data $x_1,\cdots , x_n$ assumed to be conditionally independent given parameters $\lambda_{1:k}$ and mixture proportions $\pi_{1:k-1}$ with probability density function:
+
+\begin{center}
+  $p(x_i |\lambda_{1:k},\pi_{1:k-1})=\sum\limits_{j=1}^{k}\pi_j \vartheta(x_i;\lambda_j)\qquad i\in\{1,\cdots,n\}$
+\end{center}
+
+where $\pi_j>0,\sum\limits_{j=1}^{k-1} \pi_j \leq 1$. We consider the following Batesian model, with the prior as to be described. Independently for each $j\in \{1,\cdots,k\}$ and of all other parameters:
+
+\begin{center}
+  $\lambda_j\sim Ga(\alpha,\beta)$
+\end{center}
+
+Then, independent of all parameters $\pi_{1:k-1}\sim D(\delta)$.
+
+Consider an additional $n$ conditionally independent variables $z_i\in \{1,\cdots,k\}$ ($z_i$ is the component of the mixture of which the $i^{th}$ data-point belongs to.) and a joint density of the observations and missing data as:
+
+\begin{center}
+  $p(x_{1:n},z_{1:n}|\theta_{1:k},\pi_{1:k-1})=\prod\limits_{i=1}^{n}f(x_i;\theta_{z_i})\pi_{z_i}$
+\end{center}
+
+Given a prior on $\theta_{1:k},\pi_{1:k-1}$ (write it $p(\theta_{1:k},\pi_{1:k-1})$), then the posterior is:
+
+\begin{center}
+  $p(\theta_{1:k},\pi_{1:k-1},z_{1:n}|x_{1:n})\varpropto p(z_{1:n}, x_{1:n}|\theta_{1:k},\pi_{1:k-1})p(\theta_{1:k},\pi_{1:k-1})$
+\end{center}
+
+We write the mixture model as:
+
+\begin{center}
+  $p(x_i |\lambda_{1:k},\pi_{1:k-1})=\sum\limits_{j=1}^{k}\pi_j \vartheta(x_i;\lambda_j)\qquad i\in\{1,\cdots,n\}$
+\end{center}
+
+The prior structure is then, for $j\in\{1,\cdots,k\}$:
+
+\begin{center}
+  $\lambda_j\sim Ga(\alpha,\beta)$
+  
+  ($Ga(\alpha,\beta)$ is a gamma distribution with mean $\frac{\alpha}{\beta}$)
+\end{center}
+
+For the mixture weights:
+
+\begin{center}
+  $\pi_{1:k-1}\sim D(\delta)$
+  
+  ($D(\delta)$ is a symmetric dirichlet distribution)
+  
+  $p(\pi_{1:k-1})=\frac{\Gamma(k\delta)}{\Gamma(\delta)^k}\prod\limits^{k}_{j=1}\pi_j^{\delta -1}\qquad     \pi_j\geq0,\sum\limits^{k-1}_{j=1}\pi_j\leq 1$
+\end{center}
+
+For $j\in\{1,\cdots,k\}$, the number of data points that are "allocated" to component $j$:
+
+\begin{center}
+  $n_j =\sum\limits^{n}_{i=1}I_{\{j\}}(z_i)$
+\end{center}
+
+\newpage
+
+Then we can compute the posterior for the $\lambda_{1:k}$:
+
+Let $I_{\{j\}}(z_i)=c$
+
+\begin{center}
+  $p(\lambda_{1:k},x_{1:n},z_{1:n},\pi_{1:k-1})=p(x_{1:n},z_{1:n}|\lambda_{1:k},\pi_{1:k-1})p(\lambda_{1:k},\pi_{1:k-1})$
+
+  $p(\lambda_{1:k}|x_{1:n},z_{1:n},\pi_{1:k-1})\varpropto [\prod\limits^{n}_{i=1}\pi_{z_i}\vartheta(x_i|\lambda_{z_i})][\prod\limits^{k}_{j=1}f(\lambda_j|\alpha,\beta)]p(\pi_{1:k-1})$
+  
+  $p(\lambda_j |x_{1:n},z_{1:n},\pi_{1:k-1})\varpropto \prod\limits^{n}_{i=1}[\vartheta(x_i;\lambda_j)]^c f(\lambda_j|\alpha,\beta)$\\
+  
+  $\Rightarrow\quad p(\lambda_j |x_{1:n},z_{1:n},\pi_{1:k-1})\varpropto \prod\limits^{n}_{i=1}[\frac{\lambda_j^{x_i}}{x_i !}e^{-\lambda_j \pi_j}]^c \lambda_j^{\alpha -1}\frac{\beta^\alpha e^{-\beta\lambda_j}}{\Gamma(\alpha)}$
+  
+  $\Rightarrow\quad p(\lambda_j |x_{1:n},z_{1:n},\pi_{1:k-1})\varpropto \lambda_j^{\sum_{i=1}^n x_i I_{\{j\}}(z_i)+\alpha -1}e^{-(\beta +n_j)\lambda_j}$
+\end{center}
+
+Thus:
+
+\begin{center}
+  $\lambda_j |\cdots \sim Ga(\sum_{i=1}^n x_i I_{\{j\}}(z_i)+\alpha , \beta +n_j)$
+  
+  "$|\cdots$" denotes conditioning on all other variables.
+\end{center}
+
+For missing data:
+
+\begin{center}
+  $p(z_{1:n}|x_{1:n},\lambda_{1:k},\pi_{1:k-1})\varpropto [\prod\limits^{n}_{i=1}\pi_{z_i}\vartheta(x_i|\lambda_{z_i})][\prod\limits^{k}_{j=1}f(\lambda_j|\alpha,\beta)]p(\pi_{1:k-1})$
+  
+  $\Rightarrow\quad p(z_i =j |x_{1:n},\lambda_{1:k},\pi_{1:k-1})\varpropto \vartheta(x_i|\lambda_j)\pi_j$
+  
+  $\Rightarrow\quad p(z_i =j |x_{1:n},\lambda_{1:k},\pi_{1:k-1})\varpropto \pi_j\lambda_j^{x_i}e^{-\lambda_j}$
+\end{center}
+
+For the weights:
+
+\begin{center}
+  $p(\pi_{1:k-1}|x_{1:n},\lambda_{1:k},z_{1:n})\varpropto [\prod\limits^{n}_{i=1}\pi_{z_i}\vartheta(x_i|\lambda_{z_i})][\prod\limits^{k}_{j=1}f(\lambda_j|\alpha,\beta)]p(\pi_{1:k-1})$
+  
+  $\Rightarrow\quad p(\pi_{1:k-1}|x_{1:n},\lambda_{1:k},z_{1:n})\varpropto \prod\limits^{k-1}_{j=1}\pi_j^{n_j}p(\pi_{1:k-1})$
+  
+  $\Rightarrow\quad p(\pi_{1:k-1}|x_{1:n},\lambda_{1:k},z_{1:n})\varpropto \prod\limits^{k-1}_{j=1}\pi_j^{n_j+\delta}$
+\end{center}
+
+Thus:
+
+\begin{center}
+$\pi_{1:k-1}|\cdots\sim D(\delta+n_1^{(t-1)},\cdots,\delta+n_k^{(t-1)})$
+\end{center}
+
+\newpage
+
+###The following R code will simulate the Gibbs sampler:
+
+```{r}
+library(gtools)
+
+k <- 3
+
+Mixture <- function(lambda, n){
+  
+  # Weights 
+  set.seed(1)
+  
+  Pi <- as.numeric(rep(1/k,k))
+  
+  # simulate data from model
+  
+  z <- numeric(n)   # missing data
+  
+  x <- numeric(n)
+  
+  # sample an z according to Pi
+  
+  for(i in 1:n){
+    
+    #z[i] represents that data i belongs to z[i]=j component
+    z[i] <- sample(c(1:k),1,replace = TRUE, prob = Pi) 
+    
+    x[i] <- rpois(1, lambda[z[i]])
+  }
+  
+  return(list(x, lambda, k, n, Pi))
+}
+
+Return_value <- Mixture(c(10,50,100), 100)
+
+x <- Return_value[[1]]
+```
+
+\newpage
+
+```{r}
+#plot data
+hist(x, freq = F, nclass = 100, main="Simulated Data") 
+```
+
+\newpage
+
+```{r}
+Gibbs <- function(Return_value, N){
+  
+  x <- Return_value[[1]]
+  
+  k <- Return_value[[3]]
+  
+  n <- Return_value[[4]]
+  
+  # initiate lambda
+  alpha <- 50; beta <- 0.5; set.seed(1)
+  
+  lambda <- as.numeric(rgamma(k, alpha, beta))
+  
+  lambda_0 <- lambda
+  
+  # initiate Pi(weights)
+  set.seed(2)
+  
+  Pi <- as.numeric(rdirichlet(1, c(rep(1,k))))
+  
+  Pi_0 <- Pi
+  
+  # initiate z (missing data)
+  updata_z <- function(seed){
+    
+    prob_zij <- matrix(rep(0,n*k),n,k)
+    
+    z <- numeric(n)
+    
+    for(i in c(1:n)){
+      
+      for(j in c(1:k)){
+        
+        #Pi[j]*exp(-lambda[j])*(lambda[j])^(x[i])
+        prob_zij[i,j] <- Pi[j]*dpois(x[i],lambda[j]) 
+        
+      }
+      
+      for(j in c(1:k)){
+        
+        prob_zij[i,j] <- prob_zij[i,j]/sum(prob_zij[i,])
+        
+      }
+      
+      z[i] <- sample(c(1:k),1,replace=F,prob = prob_zij[i,])
+      
+    }
+    
+    return(z)
+  }
+  
+  z <- updata_z(1)
+  
+  # the number of data in each component
+  sumI_and_sumxI <- function(z){
+    
+    # the number of samples belong to class j
+    sumI <- numeric(k)    
+    
+    # sum all samples from class j
+    sumxI <- numeric(k)   
+   
+   for(j in 1:k){
+     
+      sumI[j] <- length(which(z==j))
+      
+      sumxI[j] <- sum(x[which(z==j)])
+   }
+    
+    return(list(sumI,sumxI))
+  }
+  
+  Result1 <- sumI_and_sumxI(z)
+  
+  sumI <- Result1[[1]]
+  
+  sumxI <- Result1[[2]]
+  
+  # record simulation
+  
+  lambdas <- matrix(rep(0,N*k),N,k)
+  
+  Pis <- matrix(rep(0,N*k),N,k)
+  
+  # main loop
+  for(loop in 1:N){
+    
+    # update lambda
+    
+    for(j in 1:k){
+      
+      lambda[j] <- rgamma(1, alpha+sumxI[j], beta+sumI[j])
+    }
+    
+    # update z
+    
+    z <- updata_z(1) 
+    
+    Result1 <- sumI_and_sumxI(z)
+    
+    sumI <- Result1[[1]]
+    
+    sumxI <- Result1[[2]]
+    
+    # update weight Pi
+    
+    Pi <- as.numeric(rdirichlet(1, c(rep(1,k))+sumI))   
+    
+    # record updated parameters
+    
+    lambdas[loop, ] <- lambda
+    
+    Pis[loop, ] <- Pi
+    
+    # break condition
+    
+    sigma <- 0 
+    
+    # break loop or not
+    
+    if(loop != 1){
+      
+      J <- matrix(rep(0,2*k),2,k)
+      
+      for(j in 1:k){
+        
+        J[1,j] <- abs(lambdas[loop,j]-lambdas[(loop-1),j])<=sigma
+        
+        J[2,j] <- abs(Pis[loop,j]-Pis[(loop-1),j])<=sigma
+      }
+      
+      len <- length(which(J == FALSE))
+      
+      if(len==0){break}
+    }
+  }
+  
+  Converged_Pi <- Pis[loop,]
+  
+  Converged_lambda <- lambdas[loop,]
+
+  Pis <- Pis[c(1:loop),]
+  
+  lambdas <- lambdas[c(1:loop),]
+  
+  return(list(Converged_Pi, Converged_lambda, Pis, lambdas))
+  
+}
+
+# steps of iteration
+N <- 10000    
+
+Result <- Gibbs(Return_value, N)
+
+Converge_Pi <- Result[[1]]
+
+Converge_lambda <- Result[[2]]
+
+Pis <- Result[[3]]
+
+lambdas <- Result[[4]]
+```
+
+\newpage
+
+```{r}
+#plot samples
+plot(lambdas[,1],type="l",ylim=c(5,110),ylab="lambda")
+
+lines(lambdas[,2],col=2)
+
+lines(lambdas[,3],col=3)
+```
+
+\newpage
+
+```{r}
+par(mfrow=c(k,1))
+
+for(i in 1:k)
+{ 
+	plot(lambdas[,i],type="l")
+}
+```
+
+\newpage
+
+```{r}
+par(mfrow=c(k,1))
+
+for(i in 1:k)
+{ 
+ plot(Pis[,i],type="l")
+}
+```
+
+###Conclusion:
+
+We ran the Gibbs sampler on 100 simulated data, for 10000 iterations.From the output, we can see our observed data, which appear to correspond to 3 separated modes, including the posterior samples of the parameter $\lambda$ (which should be located close to these modes), actually the output indicates that modes are located correctly.

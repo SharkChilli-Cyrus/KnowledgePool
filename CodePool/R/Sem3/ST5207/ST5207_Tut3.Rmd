@@ -1,0 +1,57 @@
+---
+title: "ST5207_Tut3"
+author:
+- Name:Zhu Xu
+- User ID:E0337988
+- Student ID:A0131944H
+date: "2019/9/7"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\rule[-5pt]{16.3cm}{0.15em}
+\linespread{1.3}
+
+## Question 1: 
+
+Since $\phi(x)=\frac{1}{\sqrt{2\pi}}exp(-\frac{x^2}{2})$ and $f(x)=\frac{\phi(\frac{x-\mu}{\sigma})}{\sigma}$
+
+###a)
+
+\begin{center}
+For $k=0,1,2,\cdots$
+
+$\int [f^{(k)}(x)]^2dx = \int [\phi^{(k)}(\frac{x-\mu}{\sigma})\frac{1}{\sigma^{k+1}}]^2dx = \frac{1}{\sigma^{2k+1}} \int [\phi^{(k)}(x)]^2dx$
+\end{center}
+
+###b)
+
+```{r}
+data = read.table('/Users/xuzhu/Desktop/Notes/Sem3/ST5207-Nonparametric_Regression/Tut/cdrate.dat', header=FALSE)
+names(data) = c('CD_rates', 'Indicator')
+
+group_1 = data[which(data[,2]==0), ]
+group_2 = data[which(data[,2]==1), ]
+
+list_1 = group_1$CD_rates
+list_2 = group_2$CD_rates
+list_3 = data$CD_rates
+
+sd_1 = sd(list_1)
+sd_2 = sd(list_2)
+sd_3 = sd(list_3)
+
+h_1 = 1.06*sd_1*(length(list_1)^(-0.2))
+h_2 = 1.06*sd_2*(length(list_2)^(-0.2))
+h_3 = 1.06*sd_3*(length(list_3)^(-0.2))
+
+h_1
+h_2
+h_3
+```

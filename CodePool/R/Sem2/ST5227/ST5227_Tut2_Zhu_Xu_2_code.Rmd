@@ -1,0 +1,123 @@
+---
+title: "ST_5227_Tut_2_code"
+author:
+- Name:Zhu Xu
+- User ID:E0337988
+- Student ID:A0131944H
+date: "2019/2/14"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Q6:
+```{r}
+data = read.csv("/Users/xuzhu/Desktop/Notes/Sem2/ST5227-Applied_Data_Mining/Tut/Tut2/mydataT02a.csv", header = F)
+x = data.matrix(data[, 1:50])
+y = data.matrix(data[, 201])
+
+#a)
+p = 50
+I = diag(p)
+#lambda=0.1
+b1 = solve(t(x)%*%x+0.1*I)%*%t(x)%*%y
+
+#lambda=1
+b2 = solve(t(x)%*%x+1*I)%*%t(x)%*%y
+
+#lambda=10
+b3 = solve(t(x)%*%x+10*I)%*%t(x)%*%y
+
+#lambda=100
+b4 = solve(t(x)%*%x+100*I)%*%t(x)%*%y
+
+#lambda=1000
+b5 = solve(t(x)%*%x+1000*I)%*%t(x)%*%y
+
+lambda = matrix(0, 10000, 1)
+beta = matrix(0, 10000, 50)
+for (i in 1:10000){
+  lambdai=i^2/100
+  br=solve(t(x)%*%x+lambdai*I)%*%t(x)%*%y
+  beta[i,]=br
+  lambda[i]=lambdai
+}
+par(mfrow=c(1,3))
+matplot(log(lambda), beta, type="l")
+matplot(log(1/lambda), beta, type="l")
+t = apply(beta^2, 1, sum)
+matplot(t, beta, type="l")
+
+#b)
+n = length(y)
+cv = matrix(0,100,1)
+lambda = matrix(0,100,1)
+for(i in 1:100){
+  lambdai=i/20
+  err=c()
+  for(j in 1:n){
+    xnew=x[-j,]
+    ynew=y[-j,]
+    betaj=solve(t(xnew)%*%xnew+lambdai*I)%*%t(xnew)%*%ynew
+    err[j]=y[j,]-x[j,]%*%betaj
+  }
+  cv[i]=sum(err^2)/n
+  lambda[i]=lambdai
+}
+bestlambda = lambda[which(cv==min(cv))]
+Ridge = solve(t(x)%*%x+bestlambda*I)%*%t(x)%*%y
+Ridge
+bestlambda
+plot(lambda, cv)
+
+#c)
+newdata = read.csv("/Users/xuzhu/Desktop/Notes/Sem2/ST5227-Applied_Data_Mining/Tut/Tut2/mydataT02b.csv")
+newx = as.matrix(newdata[,1:50])
+newy = as.matrix(newdata[,201])
+prey=newx%*%Ridge
+errorRidge=mean((newy-prey)^2)
+errorRidge
+
+#d)
+
+lambda = matrix(0,100,1)
+model_AIC=c()
+model_BIC=c()
+for (i in 1:100){
+  lambdai=i/100
+  br=solve(t(x)%*%x+lambdai*I)%*%t(x)%*%y
+  residuals=y-x%*%br
+  p=sum(diag(x%*%solve(t(x)%*%x+lambdai*I)%*%t(x)))
+  model_AIC[i]=n*log(sum(residuals^2)/(n-p))+2*p
+  model_BIC[i]=n*log(sum(residuals^2)/(n-p))+p*log(n)
+  lambda[i]=lambdai
+}
+plot(lambda,model_AIC)
+bestlambda_AIC = lambda[which(model_AIC==min(model_AIC))]
+bestlambda_AIC
+
+plot(lambda,model_BIC)
+bestlambda_BIC = lambda[which(model_BIC==min(model_BIC))]
+bestlambda_BIC
+
+fold_cv = matrix(0,100,1)
+lambda=matrix(0,100,1)
+for(i in 1:100){
+  lambdai=i/20
+  err=c()
+  for(j in 1:5){
+    p=((j-1)*floor(n/5)+1):(j*floor(n/5))
+    xnew=x[-p,]
+    ynew=y[-p,]
+    betaj=solve(t(xnew)%*%xnew+lambdai*I)%*%t(xnew)%*%ynew
+    err[j]=mean((y[p,]-x[p,]%*%betaj)^2)
+  }
+  fold_cv[i]=sum(err)/5
+  lambda[i]=lambdai
+}
+plot(lambda,fold_cv)
+bestlambda_f = lambda[which(fold_cv==min(fold_cv))]
+bestlambda_f
+```

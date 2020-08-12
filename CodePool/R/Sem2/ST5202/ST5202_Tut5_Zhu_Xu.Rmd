@@ -1,0 +1,78 @@
+---
+title: "ST5202_Tut5"
+author: 
+- Name:Zhu Xu
+- User ID:E0337988
+- Matriculation ID:A0191344H
+date: "2019/4/17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+\rule[-5pt]{16.3cm}{0.15em}
+\linespread{1.3}
+
+### Question 1:
+
+####a)
+
+```{r}
+job = read.table(
+'/Users/xuzhu/Desktop/Notes/Sem2/ST5202-Applied_Regression_Analysis/Tut/job_proficiency.txt')
+colnames(job) = c('y', 'x1', 'x2', 'x3', 'x4')
+fm = lm(log(y)~., job)
+fmfull = lm(log(y)~1, job)
+anova(fmfull, fm)
+```
+
+\begin{center}
+$H_0: \beta_1=\beta_2=\beta_3=\beta_4=0$\\
+$H_a: \beta_1\neq 0\quad or\quad\beta_2\neq 0\quad or\quad\beta_3\neq 0\quad or\quad\beta_4\neq 0$\\
+$F^*=\frac{SSE(R)-SSE(F)}{df_R-df_F}/\frac{SSE(F)}{df_F}\sim F(4,20)$
+\end{center}
+Thus the rejection region is
+
+$$
+(F(0.95;4,20),+\infty)\Rightarrow(2.866,+\infty)
+$$
+
+$F^*=107.38>2.866$, therefore we reject $H_0$
+
+\newpage
+####c)
+
+```{r}
+fm13 = lm(log(y)~x1+x2+I(x1^2)+I(x2^2)+x1:x2, job)
+step(fm13, 
+scope=list(lower=~1,upper=~x1+x2+I(x1^2)+I(x2^2)+x1:x2), direction='backward')
+```
+
+### Question 2:
+
+####a)
+
+```{r}
+data = read.table('/Users/xuzhu/Desktop/Notes/Sem2/ST5202-Applied_Regression_Analysis/Tut/annual_dues.txt')
+colnames(data)=c('y', 'x')
+logit_fm = glm(y~x, data, family=binomial('logit'))
+summary(logit_fm)
+```
+
+$$
+logit(\hat{\pi})=log(\frac{\hat{\pi}}{1-\hat{\pi}})=-4.8075+0.1251x
+$$
+
+####b)
+
+$e^{b_1}=e^{0.1251}=1.333$
+
+####c)
+
+$x=40,log(\frac{\hat{\pi}}{1-\hat{\pi}})=0.1957\Rightarrow\quad\hat{\pi}=\frac{e^{0.1957}}{1+e^{0.1957}}=0.5488$
+
+####d)
+
+$\pi=0.75\quad\Rightarrow log(\frac{\pi}{1-\pi})=1.0986\quad\Rightarrow \hat{x}=47.2188$
+
