@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 
 # Google Sheet API v4: Get Credential
-def gsheet_GetCredentials(SCOPES, folder_path):
+def gsheet_get_credentials(SCOPES, folder_path):
     creds = None
     crendential_path = os.path.join(folder_path, 'Gsheet_credentials_Eric.json')
     token_path = os.path.join(folder_path, 'Gsheet_token_Eric_py3.pickle')
@@ -41,7 +41,7 @@ def gsheet_GetCredentials(SCOPES, folder_path):
     return creds
 
 
-def gsheet_ReadTab(sheet, sheet_id, read_range):
+def gsheet_read_tab(sheet, sheet_id, read_range):
     request = sheet.values().get(spreadsheetId=sheet_id,
                                  range=read_range)
 
