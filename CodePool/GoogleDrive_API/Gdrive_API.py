@@ -2,6 +2,8 @@
 #
 # ====================================================================================================
 
+__author__ = 'ZHU Xu'
+
 import sys
 import os
 import io
@@ -189,6 +191,14 @@ def gdrive_upload(gdriveCreds, gdriveFolderID, allFilePaths,
 
 # Test
 # ====================================================================================================
+home_path = os.path.dirname(os.path.abspath(__file__))
+credentialsFolder = "/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials"
+downloadFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
+outputFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
+# credential_folder = os.path.join(home_path, 'credentials')
+# download_path = '/ldap_home/xu.zhu/Downloads/' # change
+# output_folder = '/ldap_home/xu.zhu/Crontab_Output/' # change
+
 start_time = datetime.datetime.now()
 today = datetime.datetime.today().strftime('%F')
 d1 = (datetime.datetime.today() - datetime.timedelta(days = 1)).strftime("%Y-%m-%d")
@@ -203,18 +213,9 @@ pyVersion = "{major}.{minor}.{micro}".format(major = scriptVersion[0],
                                              minor = scriptVersion[1],
                                              micro = scriptVersion[2])
 
-home_path = os.path.dirname(os.path.abspath(__file__))
-credentialsFolder = "/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials"
-downloadFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
-outputFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
-# credential_folder = os.path.join(home_path, 'credentials')
-# download_path = '/ldap_home/xu.zhu/Downloads/' # change
-# output_folder = '/ldap_home/xu.zhu/Crontab_Output/' # change
-
 gdriveScopes = ['https://www.googleapis.com/auth/drive']
 gdriveCreds = gdrive_get_credentials(gdriveScopes, credentialsFolder)
 gdriveService = build('drive', 'v3', credentials = gdriveCreds)
-
 
 # gdriveFolderID = '15aCgr10Hjx0IAiTtufa6IOQa7RJ_n0yD'
 # allFilePaths = [os.path.join(outputFolder, 'Test1.csv'), os.path.join(outputFolder, 'Test2.xlsx')]

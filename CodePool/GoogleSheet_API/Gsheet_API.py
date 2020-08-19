@@ -1,10 +1,9 @@
 # -*- coding: utf-8-sig -*-
-#
-# |-- home_path
-# |       `-- xxx.py
-# |       |-- credentials
+# Created Time: 19th Aug, 2020
 #
 # ====================================================================================================
+
+__author__ = 'ZHU Xu'
 
 import sys
 import os
@@ -19,148 +18,159 @@ from google.auth.transport.requests import Request
 import pandas as pd
 import numpy as np
 
-# Google Sheet API v4: Get Credential
-def gsheet_get_credentials(SCOPES, folder_path):
-    creds = None
-    crendential_path = os.path.join(folder_path, 'Gsheet_credentials_Eric.json')
-    token_path = os.path.join(folder_path, 'Gsheet_token_Eric_py3.pickle')
 
-    if os.path.exists(token_path):
-        with open(token_path, 'rb') as token:
+def gsheet_get_credentials(scopes, credsFolder):
+    creds = None
+    crendentialPath = os.path.join(credsFolder, 'Gsheet_py3_credentials.json')
+    tokenPath = os.path.join(credsFolder, 'Gsheet_py3_token.pickle')
+
+    if os.path.exists(tokenPath):
+        with open(tokenPath, 'rb') as token:
             creds = pickle.load(token)
 
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(crendential_path, SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file(crendentialPath, scopes)
             creds = flow.run_local_server()
-        with open(token_path, 'wb') as token:
+        with open(tokenPath, 'wb') as token:
             pickle.dump(creds, token)
 
     return creds
 
 
-def gsheet_read_tab(sheet, sheet_id, read_range):
-    request = sheet.values().get(spreadsheetId=sheet_id,
-                                 range=read_range)
-
-    response = request.execute()
-    values = response['values']
-    cols = values.pop(0)
-    df = pd.DataFrame(data = values, columns = cols)
-
-    return df
-
-
-def read_Gsheet_int(sheet, spreadsheet_id, read_range):
-    request = sheet.values().get(spreadsheetId=spreadsheet_id,
-                                 range=read_range)
+def gsheet_read_data(gsheetCreds, gsheetID, gsheetReadRange,
+                     outputOption = 'DataFrame', printInfo = True):
+    gsheetService = build('sheets', 'v4', credentials = gsheetCreds)
+    sheet = gsheetService.spreadsheets()
+    request = sheet.values().get(spreadsheetId = gsheetID, range = gsheetReadRange)
     response = request.execute()
     values = response['values']
 
-    query_list = []
-    for i in values:
-        if i == []:
-            i = [404404]
+    if lower(outputOption) == 'list':
+        # result = [value[0] for value in values if value != []]
+        result = []
+        for value in values:
+            if value == []:
+                continue
+            else:
+                result.append(value[0])
+
+    elif lower(outputOption) == 'string':
+        pyVersion = int(sys.version_info[0])
+        if pyVersion == 2:
+            resultTemp = [str(value[0]).encode('utf-8') for value in values if value != []]
         else:
-            i[0] = i[0].encode('utf-8')
-        query_list.append(i[0])
+            resultTemp = [str(value[0]) for value in values if value != []]
+        result = "(" + ",".join(resultTemp) + ")"
 
-    return query_list
+    else:
+        cols = values.pop(0)
+        result = pd.DataFrame(data = values, columns = cols)
 
-def read_Gsheet_str(sheet, spreadsheet_id, read_range):
-    request = sheet.values().get(spreadsheetId=spreadsheet_id,
-                                 range=read_range)
-    response = request.execute()
-    values = response['values']
+    if printInfo == True:
+        gsheetURL = 'https://docs.google.com/spreadsheets/d/{0}'.format(gsheetID)
+        print("----- AUTO READ")
+        print("* Read Data From: {0}".format(gsheetURL))
+        print("* Read Range: {0}".format(gsheetReadRange))
+        print("* Output Option: {0}".format(lower(outputOption)))
+    else:
+        pass
 
-    query_list = []
-    for i in values:
-        if i == []:
-            i = ['None']
-        else:
-            i[0] = i[0].encode('utf-8')
-        query_list.append(i[0])
+    return result
 
-    return query_list
 
-# Upload data to GSheet
-def upload_csv(sheet, sheet_id, upload_range, df):
-    print('')
-    print('='*15, 'Upload csv To Google Sheet Begin', '='*15)
+def gsheet_update(gsheetCreds, gsheetID, gsheetUpdateRange, df,
+                  printInfo = True):
+    gsheetService = build('sheets', 'v4', credentials = gsheetCreds)
+    sheet = gsheetService.spreadsheets()
+    clearBody = {}
+    clearExecute = sheet.values().clear(spreadsheetId = gsheetID,
+                                        range = gsheetUpdateRange,
+                                        body = clearBody).execute()
 
-    # Clear the sheet
-    clear_body = {}
-    clear_result = sheet.values().clear(spreadsheetId=sheet_id,
-                                        range=upload_range,
-                                        body=clear_body).execute()
+    df = df.replace(np.nan, 'NA')
+    updateBody = {'values': df.values.tolist()}
+    updateExecute = sheet.values().update(spreadsheetId = gsheetID,
+                                          range = gsheetUpdateRange,
+                                          valueInputOption = 'RAW',
+                                          body = updateBody).execute()
 
-    df = df.replace(np.nan,'NA')
+    if printInfo == True:
+        gsheetURL = 'https://docs.google.com/spreadsheets/d/{0}'.format(gsheetID)
+        print("----- AUTO UPDATE")
+        print("* Update Data To: {0}".format(gsheetURL))
+        print("* Update Range (Overwrite): {0}".format(gsheetUpdateRange))
+    else:
+        pass
 
-    print('Google Sheet ID:', sheet_id)
-    print('Clear Range:', upload_range)
-    print('='*5, 'Clear Google Sheet Finished')
 
-    print('Upload DataFrame Shape:', df.shape)
-    print('GSheet Range:', upload_range)
-
-    body = {'values': df.values.tolist()}
-    result = sheet.values().update(spreadsheetId = sheet_id,
-                                   range = upload_range,
-                                   valueInputOption = 'RAW',
-                                   body = body).execute()
-
-    print('='*15, 'Upload csv To Google Sheet Finished', '='*15)
-    print('')
-    
+# TEST
 # ====================================================================================================
+credsFolder = '/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials'
+homePath = os.path.dirname(os.path.abspath(__file__))
+outputFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
+
+start_time = datetime.datetime.now()
+today = datetime.datetime.today().strftime('%F')
+
+gsheetScopes = ['https://www.googleapis.com/auth/spreadsheets']
+gsheetCreds = gsheet_get_credentials(gsheetScopes, credsFolder)
 
 
 
 
-# ====================================================================================================
-credential_folder = '/Users/xuzhu/Desktop/Keys/Gsheet_API' # AbsPath
-home_path = os.path.dirname(os.path.abspath(__file__))
-input_folder = os.path.join(home_path, 'InputFolder')
-print('')
-print("-------------------- Basic Info --------------------")
-print("* Credentials Folder Path: {0}".format(credential_folder))
-print("* Input Folder Path: {0}".format(input_folder))
+gsheetService = build('sheets', 'v4', credentials = gsheetCreds)
+sheet = gsheetService.spreadsheets()
+# ----------------------------------------------------------------------------------------------------
+# I: Read 
+gsheetID = "1dh9wv93ELGgkWH2qCRjbYLws_esLLqmGfuLb8aM47cc"
+gsheetURL = "https://docs.google.com/spreadsheets/d/{0}".format(gsheetID)
+gsheetReadRange = "'Test 1'!A1:C"
 
-all_files = []
-add_text = []
-
-
-# Test
-gsheet_SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-gsheet_creds = gsheet_GetCredentials(gsheet_SCOPES, credential_folder)
-service = build('sheets', 'v4', credentials=gsheet_creds)
-sheet = service.spreadsheets()
-
-# I: Read Data From Google Sheet
-gsheet_id = "1nwnS2SeqFnym8vuuNz1Zt-HPXthvhZjHbbJiNYl9xiE"
-google_sheet_url = "https://docs.google.com/spreadsheets/d/{0}".format(gsheet_id)
-gsheet_read_range = "'Test 1'!A1:D"
-
-""" df = gsheet_ReadTab(sheet, gsheet_id, gsheet_read_range)
-
-request = sheet.values().get(spreadsheetId = gsheet_id,
-                             range = gsheet_read_range)
-
+request = sheet.values().get(spreadsheetId = gsheetID, range = gsheetReadRange)
 response = request.execute()
-# response = {
-#     'range': "'Test 1'!A1:D1000", 
-#     'majorDimension': 'ROWS', 
-#     'values': [
-#                 ['column1', 'column2', 'column3', 'column4'],
-#                 ['Tom', '12.3', '56', '2020-08-01'],
-#                 ['Jerry', '2.6', '92', '2020-08-02']
-#               ]
+# response should be like
+# {'range': "'Test 1'!A1:D1000", 
+#  'majorDimension': 'ROWS', 
+#  'values': [
+#             ['column1', 'column2', 'column3', 'column4'],
+#             ['Tom', '12.3', '56', '2020-08-01'],
+#             ['Jerry', '2.6', '92', '2020-08-02']
+#         ]
 # }
-
 values = response['values']
-cols = values.pop(0) 
+cols = values.pop(0)
 df = pd.DataFrame(data = values, columns = cols)
-"""
 
+
+
+
+end_time = datetime.datetime.now()
+run_time = str(end_time - start_time)
+# ----------------------------------------------------------------------------------------------------
+print("======================================== Basic Info ========================================")
+print("* Script File Name: {0}".format(scriptFileName))
+print("* Script Python Version: {0}".format(pyVersion))
+print("* Script Default Encoding: {0}".format(scriptEncoding))
+print("* Script Abs Path: {0}".format(scriptAbsPath))
+print("")
+print("----- PATH INFO")
+print("Credentials Folder: {0}".format(credentialsFolder))
+print("Download Folder: {0}".format(downloadFolder))
+print("Output Folder: {0}".format(outputFolder))
+# print("")
+# print("----- AUTO UPLOAD")
+# print("* Upload Files To Gdrive: {0}".format(gdriveURL))
+# print("* Uploaded {0} Files:\n\t{1}".format(len(uploadedFiles), uploadedFiles))
+# print("")
+# print("----- AUTO DOWNLOAD")
+# print("* Downloade Gdrive Files From: {0}".format(gdriveURL))
+# print("* Matched {0} Files:\n\t{1}".format(len(matchedFiles), matchedFiles))
+# print("* Downloaded {0} Files:\n\t{1}".format(len(downloadedFiles), downloadedFiles))
+print("")
+print("----- COST TIME")
+print("* Start Time: {0}".format(str(start_time)))
+print("* End Time: {0}".format(str(end_time)))
+print("* Run Time: {0}".format(str(run_time)))
