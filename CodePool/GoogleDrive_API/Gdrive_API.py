@@ -1,5 +1,8 @@
 # -*- coding: utf-8-sig -*-
 #
+# Here only considering csv and xlsx 2 formats
+# More MIME Types Refer: https://developers.google.com/drive/api/v3/ref-export-formats
+#
 # ====================================================================================================
 
 __author__ = 'ZHU Xu'
@@ -24,8 +27,8 @@ from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 def gdrive_get_credentials(scopes, credentialsFolderPath):
     creds = None
-    crendentialPath = os.path.join(credentialsFolderPath, 'Gdrive_py3_credentials.json')
-    tokenPath = os.path.join(credentialsFolderPath, 'Gdrive_py3_token.pickle')
+    crendentialPath = os.path.join(credentialsFolderPath, 'Gdrive_credentials_Eric.json')
+    tokenPath = os.path.join(credentialsFolderPath, 'Gdrive_token_py3_Eric.pickle')
 
     if os.path.exists(tokenPath):
         with open(tokenPath, 'rb') as token:
@@ -45,8 +48,9 @@ def gdrive_get_credentials(scopes, credentialsFolderPath):
 
 
 def gdrive_download(gdriveCreds, gdriveFolderID, downloadFolderPath, gdriveFileMatchKeys,
-                    printInfo = True):
+                    addMatchKey = "", printInfo = True):
     """
+    ------------------------------------------------------------------------------------------
     Parameters
         gdriveCreds:
             - GDrive API Crendentials
@@ -59,10 +63,11 @@ def gdrive_download(gdriveCreds, gdriveFolderID, downloadFolderPath, gdriveFileM
             - Includes key words to match file names
         printInfo: boolean (default is FALSE)
             - Decide whether to print outputs
-
+    
     Returns:
         downloadedFiles: list_like
             - Names of all downloaded files
+    ------------------------------------------------------------------------------------------
     """
 
     matchedFiles = []
@@ -79,7 +84,7 @@ def gdrive_download(gdriveCreds, gdriveFolderID, downloadFolderPath, gdriveFileM
         gdriveFileName = gdriveFile['name']
 
         for _ in gdriveFileMatchKeys:
-            if "translated" in gdriveFileName and _ in gdriveFileName: # 
+            if addMatchKey in gdriveFileName and _ in gdriveFileName: # 
                 matchedFiles.append(gdriveFileName)
                 request = gdriveService.files().get_media(fileId = gdirveFileID)
                 
@@ -116,6 +121,7 @@ def gdrive_upload(gdriveCreds, gdriveFolderID, allFilePaths,
                   newFolderOption = True, printInfo = True,
                   **kwargs):
     """
+    ------------------------------------------------------------------------------------------
     Parameters
         gdriveCreds:
             - GDrive API Crendentials
@@ -138,6 +144,7 @@ def gdrive_upload(gdriveCreds, gdriveFolderID, allFilePaths,
     Returns:
         uploadedFiles: list_like
             - Names of all uploaded files
+    ------------------------------------------------------------------------------------------
     """
 
     uploadedFiles = []
@@ -188,13 +195,12 @@ def gdrive_upload(gdriveCreds, gdriveFolderID, allFilePaths,
 
     return uploadedFiles
 
-
 # Test
 # ====================================================================================================
 home_path = os.path.dirname(os.path.abspath(__file__))
-credentialsFolder = "/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials"
-downloadFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
-outputFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
+credentialsFolder = "/Users/xuzhu/Desktop/Data/Keys/GoogleAPI/credentials"
+downloadFolder = '/Users/xuzhu/Desktop/Test/GoogleAPI_Test'
+outputFolder = '/Users/xuzhu/Desktop/Test/GoogleAPI_Test'
 # credential_folder = os.path.join(home_path, 'credentials')
 # download_path = '/ldap_home/xu.zhu/Downloads/' # change
 # output_folder = '/ldap_home/xu.zhu/Crontab_Output/' # change
