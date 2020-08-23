@@ -48,7 +48,7 @@ def gsheet_read_data(gsheetCreds, gsheetID, gsheetReadRange,
     response = request.execute()
     values = response['values']
 
-    if lower(outputOption) == 'list':
+    if outputOption.lower() == 'list':
         # result = [value[0] for value in values if value != []]
         result = []
         for value in values:
@@ -57,7 +57,7 @@ def gsheet_read_data(gsheetCreds, gsheetID, gsheetReadRange,
             else:
                 result.append(value[0])
 
-    elif lower(outputOption) == 'string':
+    elif outputOption.lower() == 'string':
         pyVersion = int(sys.version_info[0])
         if pyVersion == 2:
             resultTemp = [str(value[0]).encode('utf-8') for value in values if value != []]
@@ -74,7 +74,7 @@ def gsheet_read_data(gsheetCreds, gsheetID, gsheetReadRange,
         print("----- AUTO READ")
         print("* Read Data From: {0}".format(gsheetURL))
         print("* Read Range: {0}".format(gsheetReadRange))
-        print("* Output Option: {0}".format(lower(outputOption)))
+        print("* Output Option: {0}".format(outputOption.lower()))
     else:
         pass
 
@@ -115,14 +115,21 @@ outputFolder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
 start_time = datetime.datetime.now()
 today = datetime.datetime.today().strftime('%F')
 
+scriptAbsPath = sys.argv[0]
+scriptFileName = scriptAbsPath.split('/')[-1]
+scriptEncoding = sys.getdefaultencoding()
+scriptVersion = sys.version_info
+pyVersion = "{major}.{minor}.{micro}".format(major = scriptVersion[0],
+                                             minor = scriptVersion[1],
+                                             micro = scriptVersion[2])
+
 gsheetScopes = ['https://www.googleapis.com/auth/spreadsheets']
 gsheetCreds = gsheet_get_credentials(gsheetScopes, credsFolder)
 
 
-
-
 gsheetService = build('sheets', 'v4', credentials = gsheetCreds)
 sheet = gsheetService.spreadsheets()
+"""
 # ----------------------------------------------------------------------------------------------------
 # I: Read 
 gsheetID = "1dh9wv93ELGgkWH2qCRjbYLws_esLLqmGfuLb8aM47cc"
@@ -143,7 +150,7 @@ response = request.execute()
 values = response['values']
 cols = values.pop(0)
 df = pd.DataFrame(data = values, columns = cols)
-
+"""
 
 
 
@@ -157,15 +164,14 @@ print("* Script Default Encoding: {0}".format(scriptEncoding))
 print("* Script Abs Path: {0}".format(scriptAbsPath))
 print("")
 print("----- PATH INFO")
-print("Credentials Folder: {0}".format(credentialsFolder))
-print("Download Folder: {0}".format(downloadFolder))
+print("Credentials Folder: {0}".format(credsFolder))
 print("Output Folder: {0}".format(outputFolder))
 # print("")
-# print("----- AUTO UPLOAD")
+# print("----- AUTO READ")
 # print("* Upload Files To Gdrive: {0}".format(gdriveURL))
 # print("* Uploaded {0} Files:\n\t{1}".format(len(uploadedFiles), uploadedFiles))
 # print("")
-# print("----- AUTO DOWNLOAD")
+# print("----- AUTO UPDATE")
 # print("* Downloade Gdrive Files From: {0}".format(gdriveURL))
 # print("* Matched {0} Files:\n\t{1}".format(len(matchedFiles), matchedFiles))
 # print("* Downloaded {0} Files:\n\t{1}".format(len(downloadedFiles), downloadedFiles))
