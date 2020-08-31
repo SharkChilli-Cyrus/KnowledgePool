@@ -15,5 +15,7 @@ import math
 
 import numpy as np
 import pandas as pd
+
 import langdetect as lgd
-from googletrans import Translator
+import googletrans as gt
+# from googletrans import Translator

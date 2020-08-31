@@ -63,7 +63,9 @@ def gsheet_read_data(gsheetCreds, gsheetID, gsheetReadRange,
             resultTemp = [str(value[0]).encode('utf-8') for value in values if value != []]
         else:
             resultTemp = [str(value[0]) for value in values if value != []]
-        result = "(" + ",".join(resultTemp) + ")"
+
+        resultTempV2 = ["'{0}'".format(_) for _ in resultTemp]
+        result = "(" + ",".join(resultTempV2) + ")"
 
     else:
         cols = values.pop(0)
