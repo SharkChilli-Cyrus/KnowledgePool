@@ -1,13 +1,18 @@
-
 class Settings():
 
     def __init__(self):
-        self.screenWidth = 1200
-        self.screenHeight = 800
+        self.screen_width = 1300
+        self.screen_height = 800
         self.bgColor = (230, 230, 230)
     
-        # ship speed
-        self.shipSpeedFactor = 5.5
+        # ship settings
+        self.shipSpeedFactor = 10
+
+        # alien settings
+        self.alien_speed_factor = 2
+        self.fleet_drop_speed = 10
+        self.fleet_direction = 1 # 1: right, -1: left
+
 
         # bullet
         self.bulletSpeedFactor = 13

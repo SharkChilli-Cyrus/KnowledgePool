@@ -10,6 +10,7 @@ from pygame.sprite import Group
 
 from settings import Settings
 from ship import Ship
+from alien import Alien
 import game_functions as gf
 
 
@@ -21,11 +22,16 @@ def run_game():
 
     defaultSettings = Settings()
     screen = pygame.display.set_mode(
-        (defaultSettings.screenWidth, defaultSettings.screenHeight))
+        (defaultSettings.screen_width, defaultSettings.screen_height))
     pygame.display.set_caption("Alien Invasion")
 
     # create a ship
     ship = Ship(defaultSettings, screen)
+
+    # creat an alien
+    aliens = Group()
+
+    gf.create_fleet(defaultSettings, screen, ship, aliens)
 
     # create a container to save bullets
     bullets = Group()
@@ -34,8 +40,8 @@ def run_game():
         gf.check_events(defaultSettings, screen, ship, bullets)
         ship.update()
         gf.update_bullets(bullets)
-
-        gf.update_screen(defaultSettings, screen, ship, bullets)
+        gf.update_aliens(defaultSettings, aliens)
+        gf.update_screen(defaultSettings, screen, ship, aliens, bullets)
 
 
 

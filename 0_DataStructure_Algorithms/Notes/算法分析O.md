@@ -79,3 +79,31 @@ d = 4
 
 ### Solution 1
 
+```python
+def check1(s1, s2):
+    alist = list(s2)
+    
+    run_option = True
+    pos1 = 0
+    while pos1 < len(s1) and run_option:
+        pos2 = 0
+        found = False
+        while pos2 < len(alist) and not found:
+            if s1[pos1] == alist[pos2]:
+                found = True
+          	else:
+                pos2 = pos2 + 1
+                
+ 		if found:
+            alist[pos2] = None
+      	else:
+            run_option = False
+       	pos1 += 1
+        
+ 	return run_option    
+```
+
+分析如上解法，两个字符串的长度同为 n，s1 的每个字符都会在 s2 中最多进行 n 个字符的迭代，同时在 s2 中使用 `None` 对已匹配的字符进行替换，因此总共的访问次数可以写成 1 到 n 的整数和：
+
+$\sum_{i=1}^{n} i=\frac{n(1+n)}{2}=\frac{1}{2}n^2+\frac{1}{2}n$，这个算法的复杂度即为 $O(n^2)$。
+
