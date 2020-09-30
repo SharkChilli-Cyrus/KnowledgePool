@@ -30,42 +30,41 @@ class GdriveAPI(object):
     Call Google Drive API - v3
     """
 
-    def __init__(self, drive_scopes = ["https://www.googleapis.com/auth/drive"]):
-        self.scopes = drive_scopes
+    def __init__(self, credential_path, token_path):
+
+        self.credential_path = credential_path
+        self.token_path = token_path
         self.creds = None
+        self.scopes = None
+
         self.upload_to = None
         self.download_from = None
         self.uploaded_files = []
         self.downloaded_files = []
 
 
-    def get_creds(self, credential_folder,
-        credential_filename = "Gdrive_py3_credentials.json",
-        token_filename = "Gdrive_py3_token.pickle"):
+    def get_creds(self, drive_scopes = ["https://www.googleapis.com/auth/drive"]):
+        # creds = None
+        self.scopes = drive_scopes
 
-        creds = None
-        credential_path = os.path.join(credential_folder, credential_filename)
-        token_path = os.path.join(credential_folder, token_filename)
+        if os.path.exists(self.token_path):
+            with open(self.token_path, 'rb') as token:
+                self.creds = pickle.load(token)
 
-        if os.path.exists(token_path):
-            with open(token_path, 'rb') as token:
-                creds = pickle.load(token)
-
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
+        if not self.creds or not self.creds.valid:
+            if self.creds and self.creds.expired and self.creds.refresh_token:
+                self.creds.refresh(Request())
             else:
-                flow = InstalledAppFlow.from_client_secrets_file(credential_path, self.scopes)
-                creds = flow.run_local_server(port=0)
+                flow = InstalledAppFlow.from_client_secrets_file(self.credential_path, self.scopes)
+                self.creds = flow.run_local_server(port=0)
 
-            with open(token_path, 'wb') as token:
-                pickle.dump(creds, token)
+            with open(self.token_path, 'wb') as token:
+                pickle.dump(self.creds, token)
 
-        if creds:
-            self.creds = creds
+        if self.creds:
             print("* Got Google Drive API Credentials")
         else:
-            print("x Get Credentials FAIL!")
+            print("x Get Google Drive Credentials FAIL!")
 
 
     def upload(self, files, grive_folder_id,
