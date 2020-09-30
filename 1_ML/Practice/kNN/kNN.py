@@ -39,15 +39,15 @@ def normalize(data_set):
     max_values = data_set.max(axis = 0)
     range_values = max_values - min_values
 
-    normalized_data_set = zeros(data_set.shape)
+    normalized_data_set = np.zeros(data_set.shape)
     number = data_set.shape[0]
     normalized_data_set = data_set - np.tile(min_values, (number, 1))
-    normalized_data_set = normalized_data_set/np.tile(range_values, (range_values, 1))
+    normalized_data_set = normalized_data_set/np.tile(range_values, (number, 1))
 
     return normalized_data_set, range_values, min_values
 
 
-def calssify_kNN(input_data, training_set, labels, k):
+def classify(input_data, training_set, labels, k):
     training_set_size = training_set.shape[0]
     diff = np.tile(input_data, (training_set_size, 1)) - training_set # np.tile(A, reps)
     
@@ -67,11 +67,13 @@ def calssify_kNN(input_data, training_set, labels, k):
     # sorted_class_count = [(key, value), (key, value), ...]
 
     return sorted_class_count[0][0]
+
+
     
     
 # ============================== Main ==============================
 if __name__ == "__main__":
     data_set, labels = create_data_set()
     test_data = [0.2, 0.3]
-    test_result = calssify_kNN(test_data, data_set, labels, 2)
+    test_result = classify(test_data, data_set, labels, 2)
     print("* Test Result: {0}".format(test_result))
