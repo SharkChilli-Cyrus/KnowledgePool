@@ -4,6 +4,8 @@
 
 ---
 
+
+
 ## 什么是算法分析
 
 为了解决同一种问题可能会有许多种不同的算法，在比较不同种类的算法中以某种度量方式进行比较，最终选用更加高效的算法，而**算法分析**就是基于每种算法使用的计算资源量来比较不同算法之间的差异。
@@ -106,4 +108,61 @@ def check1(s1, s2):
 分析如上解法，两个字符串的长度同为 n，s1 的每个字符都会在 s2 中最多进行 n 个字符的迭代，同时在 s2 中使用 `None` 对已匹配的字符进行替换，因此总共的访问次数可以写成 1 到 n 的整数和：
 
 $\sum_{i=1}^{n} i=\frac{n(1+n)}{2}=\frac{1}{2}n^2+\frac{1}{2}n$，这个算法的复杂度即为 $O(n^2)$。
+
+
+
+### Solution 2
+
+```python
+def check2(s1, s2):
+    list1, list2 = list(s1), list(s2)
+    
+   	list1.sort()
+    list2.sort()
+    
+    pos = 0
+    matches = True
+    while pos < len(s1) and matches:
+        if list1[pos] == list2[pos]:
+            pos += 1
+       	else:
+            matches = False
+            
+   	return matches
+```
+
+即使 s1, s2不同，但是它们都是由完全相同的字符组成，因此比对排序后的两个字符串，如果相同即认为是乱序字符串，但是调用 python 排序是有成本的，排序的复杂度通常是 $O(n^2) | O(n\cdot log(n))$，因此虽然只迭代了n次，但排序的操作比迭代花费更多，最终算法的复杂度跟排序过程有同样的量级。
+
+
+
+### Solution 3
+
+```python
+def check3(s1, s2):
+    c1, c2 = [0]*26, [0]*26
+    
+    for i in range(len(s1)):
+        pos = ord(s1[i]) - ord("a") # ord('a') = 97, ord('b') = 98
+        c1[pos] = c1[pos] + 1
+        
+ 	for i in range(len(s2)):
+        pos = ord(s2[i]) - ord("a")
+        c2[pos] = c2[pos] + 1
+   
+	j = 0
+    continue_option = True
+    while j < 26 and continue_option:
+        if c1[j] == c2[j]:
+            j += 1
+      	else:
+            continue_option = False
+            
+ 	return continue_option
+```
+
+我们最终的目的是判断两个乱序字符串有相同数目的字符，因此计算每个字母出现的次数，定义长度为26的列表，每个可能出现的字符占据一个位置，每次看到一个特定的字符就增加该位置的计数器，最终如果两个列表相同则判定为乱序字符串。
+
+这个算法前两个迭代都是n，第三个迭代比较两个计数列表，需要26步，即 $T(n)=2n+26\Rightarrow O(n)$，虽然该算法是线性量级，但它需要额外的空间保存两个字符计数列表，也就是牺牲了空间获得了时间上的提升。
+
+
 

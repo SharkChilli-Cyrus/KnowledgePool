@@ -30,22 +30,17 @@ class GdriveAPI(object):
     Call Google Drive API - v3
     """
 
-    def __init__(self, credential_path, token_path):
-
+    def __init__(self, credential_path,
+                token_path=None, drive_scopes=["https://www.googleapis.com/auth/drive"]):
         self.credential_path = credential_path
         self.token_path = token_path
+        self.scopes = drive_scopes
         self.creds = None
-        self.scopes = None
-
+        
         self.upload_to = None
         self.download_from = None
         self.uploaded_files = []
         self.downloaded_files = []
-
-
-    def get_creds(self, drive_scopes = ["https://www.googleapis.com/auth/drive"]):
-        # creds = None
-        self.scopes = drive_scopes
 
         if os.path.exists(self.token_path):
             with open(self.token_path, 'rb') as token:
@@ -67,38 +62,35 @@ class GdriveAPI(object):
             print("x Get Google Drive Credentials FAIL!")
 
 
-    def upload(self, files, grive_folder_id,
+    def upload(self, files, gdrive_folder_id,
         new_folder = False, show_info = True,
         **kwargs):
         """
         ------------------------------------------------------------------------------------------
-        Parameters
-            gdriveCreds:
-                - GDrive API Crendentials
-            grive_folder_id: str_like
+        Parameters:
+            @ gdrive_folder_id: str_like
                 - The GDrive Folder ID
                 - Need to upload files into it
                 - Or create a new sub folder in it
-            files: list_like
+            @ files: list_like
                 - Absolute Paths of all local files that need to be uploaded
-            new_folder: boolean (default is False)
+            @ new_folder: boolean (default is False)
                 - Decide whether to create a new subfolder
                 - NOTE: This function only considers level2 folders structure
                 - which means parent_folder --> new_sub_folder
-            show_info: boolean (default is True)
+            @ show_info: boolean (default is True)
                 - Decide whether to print outputs
-            kwargs: dict_like (optional)
+            @ kwargs: dict_like (optional)
                 - If you choose new_folder = True
                 - Should pass another parameter into kwargs as the new subfolder's name
 
         Returns:
-            uploadedFiles: list_like
-                - Names of all uploaded files
+            None
         ------------------------------------------------------------------------------------------
         """
 
         # uploaded_files = []
-        self.upload_to = 'https://drive.google.com/drive/u/0/folders/{0}'.format(grive_folder_id)
+        self.upload_to = 'https://drive.google.com/drive/u/0/folders/{0}'.format(gdrive_folder_id)
         service = build('drive', 'v3', credentials = self.creds)
 
         if new_folder == True:
@@ -109,12 +101,12 @@ class GdriveAPI(object):
 
             folder_meta_data = {'name': str(folder_name), 
                                 'mimeType': 'application/vnd.google-apps.folder', 
-                                'parents': [grive_folder_id]}
+                                'parents': [gdrive_folder_id]}
 
             folder_object = service.files().create(body = folder_meta_data, fields = 'id').execute()
             folder_id = folder_object['id']
         else:
-            folder_id = grive_folder_id
+            folder_id = gdrive_folder_id
 
         for file_path in files:
             filename = file_path.split('/')[-1]
@@ -145,31 +137,93 @@ class GdriveAPI(object):
             print("* Uploaded {0} Files:\n\t{1}".format(len(self.uploaded_files), self.uploaded_files))
         else:
             pass
+    
+
+    def download(self, gdrive_folder_id, download_folder, match_keys,
+                required_key="", show_info=True):
+        """
+        ------------------------------------------------------------------------------------------
+        Parameters:
+            @ gdrive_folder_id: str_like
+                - The GDrive Folder ID
+                - Need to download files from it
+            @ download_folder:
+                - The folder path which need to save downloaded files
+            @ match_keys: list_like
+                - Download files which filename includes one of the matching keys
+            @ required_key (default is "")
+                - Required key which is included in filenames
+            @ show_info: boolean (default is True)
+                - Decide whether to print outputs
+
+        Returns:
+            None
+        ------------------------------------------------------------------------------------------
+        """
+        
+        service = build('drive', 'v3', credentials = self.creds)
+        self.download_from = "https://drive.google.com/drive/u/0/folders/{0}".format(gdrive_folder_id)
+
+        search_query = "'{0}' in parents".format(gdrive_folder_id)
+        listed_response = service.files().list(q = search_query).execute()
+        listed_files = listed_response["files"]
+        matched_files = []
+        for gdrive_file in listed_files:
+            file_id = gdrive_file["id"]
+            filename = gdrive_file["name"]
+
+            for match_key in match_keys:
+                if required_key in filename and match_key in filename:
+                    matched_files.append(filename)
+                    request = service.files().get_media(fileId = file_id)
+            
+                    # Method I
+                    with open(os.path.join(download_folder, filename), 'wb') as f:
+                        downloader = MediaIoBaseDownload(f, request)
+                        done = False
+                        while done is False:
+                            status, done = downloader.next_chunk()
+
+                    self.downloaded_files.append(filename)
+
+                    # Method II
+                    # fh = io.BytesIO(request.execute())
+                    # with io.open(os.path.join(download_folder, filename), 'wb') as f:
+                    #     fh.seek(0)
+                    #     f.write(fh.read())
+                    # print("Downloaded {0}".format(gdriveFileName))
+
+                else:
+                    pass
+
+        if show_info == True:
+            print("")
+            print("----- AUTO DOWNLOAD")
+            print("* Downloade Gdrive Files From: {0}".format(self.download_from))
+            print("* Matching Keys: {0} & {1}".format(match_keys, required_key))
+            print("* Matched {0} Files:\n\t{1}".format(len(matched_files), matched_files))
+            print("* Downloaded {0} Files:\n\t{1}".format(len(self.downloaded_files), self.downloaded_files))
+        else:
+            pass
 
 
+if __name__ == "__main__":
+    today = datetime.datetime.today().strftime('%F')
 
-# TEST
-start_time = datetime.datetime.now()
-today = datetime.datetime.today().strftime('%F')
+    root_path = os.path.dirname(os.path.abspath(__file__))
+    credential_folder = "/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials"
+    gdrive_credential_path = os.path.join(credential_folder, "Gdrive_py3_credentials.json")
+    gdrive_token_path = os.path.join(credential_folder, "Gdrive_py3_token.pickle")
 
-root_path = os.path.dirname(os.path.abspath(__file__))
-credential_folder = "/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials"
-download_folder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
-output_folder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
+    folder = '/Users/xu.zhu/Desktop/Test/GoogleAPI_Test'
 
+    gdrive_object = GdriveAPI(credential_path = gdrive_credential_path,
+                            token_path = gdrive_token_path)
+    gdrive_folder_id = "1HY79S20FC3xC3GMhPM1VmVMG0XRVpXA0"
+    match_keys = ["2"]
+    required_key = "Test"
 
-upload_files = [os.path.join(output_folder, 'Test1.csv'), os.path.join(output_folder, 'Test2.xlsx')]
-test_folder_id = '1HY79S20FC3xC3GMhPM1VmVMG0XRVpXA0'
-
-gdrive_object = GdriveAPI()
-gdrive_object.get_creds(credential_folder)
-gdrive_object.upload(upload_files, test_folder_id)
-
-
-end_time = datetime.datetime.now()
-run_time = str(end_time - start_time)
-print("")
-print("----- COST TIME")
-print("* Start Time: {0}".format(str(start_time)))
-print("* End Time: {0}".format(str(end_time)))
-print("* Run Time: {0}".format(str(run_time)))
+    gdrive_object.download(gdrive_folder_id = gdrive_folder_id,
+                           download_folder = folder,
+                           match_keys = match_keys,
+                           required_key = required_key)

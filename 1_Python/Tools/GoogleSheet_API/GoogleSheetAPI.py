@@ -22,21 +22,18 @@ class GsheetAPI(object):
     Call Google Sheet API - v4
     """
 
-    def __init__(self, credential_path, token_path):
+    def __init__(self, credential_path,
+                token_path=None, sheet_scopes=["https://www.googleapis.com/auth/spreadsheets"]):
         self.credential_path = credential_path
         self.token_path = token_path
-        self.scopes = None
-        self.creds = None
+        self.scopes = sheet_scopes
 
+        self.creds = None
         self.update_to = None
         self.read_from = None
 
-
-    def get_creds(self, sheet_scopes = ['https://www.googleapis.com/auth/spreadsheets']):
-        self.scopes = sheet_scopes
-
         if os.path.exists(self.token_path):
-            with open(self.token_path, 'rb') as token:
+            with open(self.token_path, "rb") as token:
                 self.creds = pickle.load(token)
 
         if not self.creds or not self.creds.valid:
@@ -45,8 +42,7 @@ class GsheetAPI(object):
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(self.credential_path, self.scopes)
                 self.creds = flow.run_local_server()
-
-            with open(self.token_path, 'wb') as token:
+            with open(self.token_path, "wb") as token:
                 pickle.dump(self.creds, token)
             
         if self.creds:
@@ -56,24 +52,36 @@ class GsheetAPI(object):
 
         
     def read(self, sheet_id, sheet_range, 
-        read_type = 'DataFrame', show_info = True):
+        read_type="DataFrame", show_info=True):
         """
         ------------------------------------------------------------------------------------------
-        Parameters
+        Parameters:
+            @ sheet_id
+                - Google Sheet ID
+            @ sheet_range
+                - Google Sheet Range, '{Tab}!{Start}:{End}', e.g. 'Sheet1!A2:E'
+            @ read_type
+                - DataFrame
+                - List
+                - String
+            @ show_info: boolean (default is True)
+                - Print outputs info option
         
         Returns:
+            @ result:
+                - Data, based on read_type
         ------------------------------------------------------------------------------------------
         """
 
-        self.read_from = 'https://docs.google.com/spreadsheets/d/{0}'.format(sheet_id)
+        self.read_from = "https://docs.google.com/spreadsheets/d/{0}".format(sheet_id)
 
-        service = build('sheets', 'v4', credentials = self.creds)
+        service = build("sheets", "v4", credentials = self.creds)
         sheet_object = service.spreadsheets()
         request = sheet_object.values().get(spreadsheetId = sheet_id, range = sheet_range)
         response = request.execute()
-        values = response['values']
+        values = response["values"]
 
-        if read_type.lower() == 'list':
+        if read_type.lower() == "list":
             # result = [value[0] for value in values if value != []]
             result = []
             for value in values:
@@ -82,14 +90,14 @@ class GsheetAPI(object):
                 else:
                     result.append(value[0])
 
-        elif read_type.lower() == 'string':
+        elif read_type.lower() == "string":
             py_version = int(sys.version_info[0])
             if py_version == 2:
-                result_temp = [str(value[0]).encode('utf-8') for value in values if value != []]
+                result_temp = [str(value[0]).encode("utf-8") for value in values if value != []]
             else:
                 result_temp = [str(value[0]) for value in values if value != []]
 
-            result_temp_v2 = ["'{0}'".format(_) for _ in result_temp]
+            result_temp_v2 = ['"{0}"'.format(_) for _ in result_temp]
             result = "(" + ",".join(result_temp_v2) + ")"
 
         else:
@@ -109,10 +117,31 @@ class GsheetAPI(object):
 
     def update(self, sheet_id, sheet_range, data,
         update_type = "overwrite", show_info = True):
+        """
+        ------------------------------------------------------------------------------------------
+        Parameters:
+            @ sheet_id
+                - Google Sheet ID
+            @ sheet_range
+                - Google Sheet Range, '{Tab}!{Start}:{End}', e.g. 'Sheet1!A2:E'
+            @ data:
+                - The data which is going to update to Gsheet
+            @ update_type:
+                - overwrite
+                - append
+            @ show_info: boolean (default is True)
+                - Print outputs info option
+        
+        Returns:
+            @ result:
+                - Data, based on read_type
+        ------------------------------------------------------------------------------------------
+        """
 
-        self.update_to = "https://docs.google.com/spreadsheets/d/{0}".format(gsheetID)
+        self.update_to = "https://docs.google.com/spreadsheets/d/{0}".format(sheet_id)
+        data = data.replace(np.nan, "NA")
 
-        service = build('sheets', 'v4', credentials = self.creds)
+        service = build("sheets", "v4", credentials = self.creds)
         sheet_object = service.spreadsheets()
 
         if update_type.lower() == "overwrite":
@@ -121,11 +150,16 @@ class GsheetAPI(object):
                                                         range = sheet_range,
                                                         body = clear_body).execute()
 
-            data = data.replace(np.nan, 'NA')
-            update_body = {'values': data.values.tolist()}
+            update_body = {"values": data.values.tolist()}
             update_execute = sheet_object.values().update(spreadsheetId = sheet_id,
                                                         range = sheet_range,
-                                                        valueInputOption = 'RAW',
+                                                        valueInputOption = "RAW",
+                                                        body = update_body).execute()
+        elif update_type.lower() == "append":
+            update_body = {"values": data.values.tolist()}
+            update_execute = sheet_object.values().append(spreadsheetId = sheet_id,
+                                                        range = sheet_range,
+                                                        valueInputOption = "RAW",
                                                         body = update_body).execute()
         else:
             pass # TBC
@@ -137,3 +171,22 @@ class GsheetAPI(object):
             print("* Update Range: {0}".format(sheet_range))
         else:
             pass
+    
+
+
+if __name__ == "__main__":
+    credential_folder = "/Users/xu.zhu/Desktop/Data/Keys/GoogleAPI/credentials"
+    gdrive_credential_path = os.path.join(credential_folder, "Gdrive_py3_credentials.json")
+    gdrive_token_path = os.path.join(credential_folder, "Gdrive_py3_token.pickle")
+
+    # data = pd.DataFrame([{"a": 1, "b": "word", "c": 2.5}])
+    data = pd.DataFrame({"a": ["Test", "Test", "Test"]})
+    gsheet_object = GsheetAPI(credential_path = gdrive_credential_path,
+                              token_path = gdrive_token_path)
+
+    gsheet_id = "16zX9yHvMi1gNQL8l9bUFblEbEK6vnqQuY4b8ZfM_QdQ"
+    gsheet_range = "Test!F1"
+    gsheet_object.update(sheet_id = gsheet_id,
+                         sheet_range = gsheet_range, 
+                         data = data,
+                         update_type = "append")
