@@ -90,12 +90,31 @@ if __name__ == "__main__":
 
     binary_stack = Stack()
     while number > 0:
-        remainder = number % 2
+        remainder = number % 2 # {base}
         binary_stack.push(remainder)
-        number = number // 2
+        number = number // 2 # {base}
 
     binary_string = ""
     while not binary_stack.is_empty():
         binary_string = binary_string + str(binary_stack.pop())
     
     print(binary_string)
+
+
+    # --------------------------------------------------
+    # Test 4
+    number = 233
+    digits = "0123456789ABCDEF"
+
+    remainder_stack = Stack()
+    while number > 0:
+        remainder_index = number % 16 # {base}
+        remainder = digits[remainder_index]
+        remainder_stack.push(remainder)
+        number = number // 16 # {base}
+
+    new_string = ""
+    while not remainder_stack.is_empty():
+        new_string = new_string + str(remainder_stack.pop())
+    
+    print(new_string)
