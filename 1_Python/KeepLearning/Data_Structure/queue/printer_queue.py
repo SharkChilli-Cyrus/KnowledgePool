@@ -6,6 +6,7 @@
 
 1 - 20 pages per task
 
+Page Per Minute
 normal: 10 pages per min
 good: 5 pages per min
 
