@@ -2,8 +2,8 @@ import sys
 import os
 
 class BinaryTree:
-    def __init__(self, root_object):
-        self.key = root_object
+    def __init__(self, key_value=""):
+        self.key = key_value
         self.left_child = None
         self.right_child = None
     
@@ -20,10 +20,10 @@ class BinaryTree:
             self.right_child = BinaryTree(new_node)
         else:
             temp = BinaryTree(new_node)
-            temp.right_child = self.right_child
-            self.right_child = temp
+            temp.left_child = self.left_child
+            self.left_child = temp
     
-    def get_root_value(self):
+    def get_key_value(self):
         return self.key
     
     def get_left_child(self):
@@ -32,8 +32,8 @@ class BinaryTree:
     def get_right_child(self):
         return self.right_child
     
-    def set_root_value(self, new_object):
-        self.key = new_object
+    def set_root_value(self, new_value):
+        self.key = new_value
 
 
 if __name__ == "__main__":
