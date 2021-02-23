@@ -1,0 +1,36 @@
+set showmode
+set showcmd
+set t_Co=256
+set number                      "show row number
+syntax on                       "highlight syntax
+set textwidth=80
+set linebreak
+set wrapmargin=2
+
+filetype on                     "自动检测文件类型
+filetype indent on              "载入相应的缩进规则
+set autoindent
+set tabstop=4                   "Tab键替换的空格长度, 默认为8
+set softtabstop=4               "退格键退回缩紧空格的长度
+set shiftwidth=4                "表示每一级缩进的长度
+set expandtab                   "设置缩进用空格表示
+set list
+set listchars=tab:»■,trail:■
+
+set wildmenu
+set wildmode=longest:list,full
+
+filetype plugin on
+filetype plugin indent on
+
+set history=1000
+set autoread
+set novisualbell
+set ruler
+set laststatus=2
+set showmatch
+set hlsearch
+set incsearch
+
+"set spell spelllang=en_us
+"set undofile
