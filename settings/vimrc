@@ -1,3 +1,5 @@
+":help vimrc-intro
+
 set showmode
 set showcmd
 set t_Co=256
