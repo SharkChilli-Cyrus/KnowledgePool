@@ -1,6 +1,5 @@
 import sys
 import os
-
 import requests
 
 import numpy as np
@@ -17,7 +16,14 @@ except:
     from email.mime.base import MIMEBase # python3
 
 
-def read_data(filepath, show_info=True):
+def read_data(
+        filepath,
+        show_info=True
+    ):
+    """
+    Function Description - TBC
+    """
+
     msg = ["\n{0} {1}".format("-"*5, "READ DATA")]
 
     file_name = os.path.basename(filepath)
@@ -40,7 +46,7 @@ def read_data(filepath, show_info=True):
         pass
 
     return df
-    
+
 
 def send_email(
         recipients,
@@ -49,7 +55,10 @@ def send_email(
         sender,
         password,
         attachments=[]
-    ): 
+    ):
+    """
+    Function Description - TBC
+    """
 
     msg = MIMEMultipart()
     msg["From"] = sender
@@ -74,9 +83,16 @@ def send_email(
     mailServer.close()
 
 
-def create_folder(folder_paths, clear_option=False, show_info=True):
-    msg = []
+def create_folder(
+        folder_paths,
+        clear_option=False,
+        show_info=True
+    ):
+    """
+    Function Description - TBC
+    """
 
+    msg = []
     if type(folder_paths) == str:
         folder_paths = [folder_paths]
     elif type(folder_paths) == list:
@@ -104,7 +120,15 @@ def create_folder(folder_paths, clear_option=False, show_info=True):
         pass
 
 
-def combine_files(filepaths, cols="all", show_info=True):
+def combine_files(
+        filepaths,
+        cols="all",
+        show_info=True
+    ):
+    """
+    Function Description - TBC
+    """
+
     conbined_df = pd.DataFrame()
 
     total_files = len(filepaths)
@@ -142,11 +166,17 @@ def combine_files(filepaths, cols="all", show_info=True):
     return conbined_df
 
 
-def ingest_csv(filepath, job_key, token):
+def ingest_csv(
+        filepath,
+        job_key,
+        token
+    ):
+
     api_endpoint = "https://data-ingestion.idata.shopeemobile.com/api/csv/upload/file/{0}".format(job_key)
     headers = {"data-ingestion-token": token}
-    response = requests.post(api_endpoint,
-                             headers=headers,
-                             files={"file": open(filepath, "rb")}
-                             )
+    response = requests.post(
+        api_endpoint,
+        headers=headers,
+        files={"file": open(filepath, "rb")}
+    )
     return response
