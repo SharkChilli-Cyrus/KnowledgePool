@@ -61,6 +61,8 @@ The **after-tax incremental cash flows** provide a sound basis for capital budge
 
 **<font color=blue>The sum of the present value of all the after-tax cash flows of the project. NPV indicates the expected change in the value of the firm. </font>**
 
+<font color=red>**Key: It is a direct measure of the expected increase in the value of the firm, but it does not include any consideration of the size of the project.**</font>
+
 $NPV = CF_0 + \frac{CF_1}{(1+k)^1} + \frac{CF_2}{(1+k)^2} + \cdots + \frac{CF_n}{(1+k)^n}$
 
 * <mark>Example</mark>
@@ -87,6 +89,8 @@ $NPV = CF_0 + \frac{CF_1}{(1+k)^1} + \frac{CF_2}{(1+k)^2} + \cdots + \frac{CF_n}
 #### IRR - Internal Rate of Return
 
 **<font color=blue>The discount rate that makes the total present value of all cash flows, the NPV, equal to zero. It is the expected return on the project.</font>**
+
+<font color=red>**Key: It measures profitability as a percentage, but may has multiple IRRs or no IRR. If a project has an unconventional cash flow pattern (has cash flows during its life or at the end of its life in addition to its initial cash outflow), it may have multiple IRRs or no IRR.**</font>
 
 $0=NPV= CF_0 + \frac{CF_1}{(1+IRR)^1} + \frac{CF_2}{(1+IRR)^2} + \cdots + \frac{CF_n}{(1+IRR)^n}$
 
@@ -228,11 +232,29 @@ It indicates the value you are receiving in exchange for one unit of currency in
 
 
 
-### NPV Profile
+#### NPV Profile
 
-<font color=blue>A project's NPV profile is a graph that shows a project's **NPV for different discount rates**.</font>
+<font color=blue>A project's NPV profile is a graph that shows a project's **NPV for different discount rates**.</font> X-axis: discount rate, Y-axis: NPV
+
+Crossover rate: It is the rate at which the NPVs are equal.
 
 
+
+#### Conflicting project rankings Issue
+
+|  Year   | Project X | Project Y |
+| :-----: | :-------: | :-------: |
+|    0    |   -1000   |   -1000   |
+|    1    |    500    |     0     |
+|    2    |    500    |     0     |
+|    3    |    500    |     0     |
+|    4    |    500    |     0     |
+|    5    |    500    |   4000    |
+|         |           |           |
+| **NPV** |  **895**  | **1484**  |
+| **IRR** | **41.0%** | **32.0%** |
+
+<font color=red>**Key: NPV is the only acceptable creterion when ranking projects.**</font>
 
 
 
@@ -240,43 +262,70 @@ It indicates the value you are receiving in exchange for one unit of currency in
 
 <font color=blue>**Q: Describe the capital budgeting process and distinguish among the various categories of capital projects**</font>
 
-A: 
+A: Capital budgeting is the process of evaluating capital projects, projects with cash flows over more than one year.
+
+The four steps of the capital budgeting process are:
+
+1. Generate investment ideas
+2. Analyse project ideas
+3. Create firm-wide capital budget
+4. Monitor decisions and conduct a post-audit
+
+Categories of capital projects includes:
+
+1. Replacement projects for maintaining the business or for cost reduction
+2. Expansion projects
+3. New product or market development
+4. Mandatory projects to meet environmental or regulatory requirements
+5. Other projects, such as research and development or pet projects of senior management
 
 
 
 <font color=blue>**Q: Describe the basic principles of capital budgeting**</font>
 
-A: 
+A: Capital budgeting decisions should be based on incremental after-tax cash flows, the expected differences in after-tax cash flows if a project is undertaken. Sunk (already incurred) costs are not considered, but externalities and cash opportunity costs must be included in project cash flows.
 
 
 
 <font color=blue>**Q: Explain how the evaluation and selection of capital projects is affected by mutually exclusive projects, project sequencing, and capital rationing**</font>
 
-A: 
+A: Acceptable independent projects can all be undertaken, while a firm must choose between or among mutually exclusive projects.
+
+Project sequencing concerns the opportunities for future capital projects that may be created by undertaking a current project.
+
+If a firm cannot undertake all profitable projects because of limited ability to raise capital, the firm should choose that group of fundable positive NPV projects with the highest total NPV.
 
 
 
 <font color=blue>**Q: Calculate and interpret new present value (NPV), internal rate of return (IRR), payback period, discounted payback period, and profitability index (PI) of a single capital project**</font>
 
-A: 
+A: NPV is the sum of the present values of a project's expected cash flows and represents the increase in firm value from undertaking a project. Positive NPV projects should be undertaken, but negative NPV projects are expected to decrease the value of the firm.
+
+The IRR is the discount rate that equates the present values of the project's expected cash inflows and outflows and, thus, is the discount rate for which the NPV of a project is zero. A project for which the IRR is greater (less) than the discount rate will have an NPV that is positive (negative) and should be accepted (not be accepted).
+
+The payback (discounted payback) period is the number of years required to recover the original cost of the project (original cost of the project in present value terms).
+
+The profitability index is the ratio of the present value of a project's future cash flows to ins initial cash outlay and is greater than 1 when a project's NPV is positive.
 
 
 
 <font color=blue>**Q: Explain the NPV profile, compare the NPV and IRR methods when evaluating independent and mutually exclusive projects, and describe the problems associated with each of the evaluation methods**</font>
 
-A:
+A: An NPV profile plots a project's NPV as a function of the discount rate, and it intersects the horizontal axis (NPV=0) at its IRR. If two NPV profiles intersect at some discount rate, that is the crossover rate, and different projects are preferred at discount rates higher and lower than the crossover rate.
 
 
 
 <font color=blue>**Q: Contrast the NPV decision rule to the IRR decision rule and identify problems associated with the IRR rule**</font>
 
-A:
+A: For projects with conventional cash flow patterns, the NPV and IRR methods produce the same accept/reject decision, but projects with unconventional cash flow patterns can produce multiple IRRs or no IRR.
+
+Mutually exclusive projects can be ranked based on their NPVs, but rankings based on other methods will not necessarily maximize the value of the firm.
 
 
 
-<font color=blue>**Q: Descrive expected relations among an investment's NPV, company value, and share price**</font>
+<font color=blue>**Q: Describe expected relations among an investment's NPV, company value, and share price**</font>
 
-A:
+A: The NPV method is a measure of the expected change in company value from undertaking a project. A firm's stock price may be affected to the extent that engaging in a project with that NPV was previously unanticipated by investors.
 
 
 
@@ -343,4 +392,10 @@ A:
 > Financing costs like interest costs are excluded from calculations of operating cash flows. The financing costs are reflected in the required rate of return for an investment project. If financing costs are included, we would be double-counting these costs.
 
 
+
+---
+
+
+
+## Cost of Capital
 
