@@ -399,3 +399,79 @@ A: The NPV method is a measure of the expected change in company value from unde
 
 ## Cost of Capital
 
+
+
+### Weighted Average Cost of Capital (WACC)
+
+
+
+### Project Cost of Capital
+
+
+
+### LOS
+
+
+
+### Practice
+
+**Q: A firm with a marginal tax rate of 40% has a weighted average cost of capital of 7.11%. The before-tax cost of debt is 6%, and the cost of equity is 9%. The weight of equity in the firm’s capital structure is closest to:**
+
+* A: 79%
+* B: 65%
+* C: 37%
+
+> **B**
+>
+> WACC = $w_d \cdot [k_d(1-t)]+w_e \cdot k_e = w_d \cdot [6\%\cdot (1-40\%)] + w_e \cdot 9\% = 7.11\%$, where $w_d + w_e = 1$
+
+
+
+**Q: The Gearing Company has an after-tax cost of debt capital of 4 percent, a cost of preferred stock of 8 percent, a cost of equity capital of 10 percent, and a weighted average cost of capital of 7 percent. Gearing intends to maintain its current capital structure as it raises additional capital. In making its capital-budgeting decisions for the average-risk project, the relevant cost of capital is:**
+
+* A: 6%
+* B: 7%
+* C: 8%
+
+> **B**
+>
+> The weighted average cost of capital, using weights derived from the current capital structure, is the best estimate of the cost of capital for the average-risk project of a company.
+
+
+
+**Q: The cost of which source of capital *most likely* requires adjustment for taxes in the calculation of a firm’s weighted average cost of capital?**
+
+* A: Common stock
+* B: Preferred stock
+* C: Bonds
+
+> **C**
+>
+> Bonds are a form of debt that must be adjusted for taxes when calculating the weighted average cost of capital.
+
+
+
+**Q: An investment opportunity schedule is most accurately described as illustrating all the projects:**
+
+* A: available to a company
+* B: that will add value to a company
+* C: within a company's optimal capital budget
+
+> **A**
+>
+> An investment opportunity schedule is a ranking of all the projects available to a company, from highest to lowest IRR. Projects that will add value to a company are the portion of an investment opportunity schedule for which project IRRs are greater than the marginal cost of capital.
+
+
+
+**Q: The expected divident is \$2.5 for a share of stock priced at \$25. What is the cost of equity if the long-term growth in dividends is projected to be 8%**
+
+* A: 15%
+* B: 16%
+* C: 18%
+
+> **C**
+>
+> $k_{ce}=\frac{D_1}{P_0}+g=\frac{2.5}{25}+8\%=18\%$
+
+
+
